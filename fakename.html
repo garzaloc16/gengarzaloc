@@ -3,25 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <title>FakeName Generator - USA</title>
-  <!-- Faker UMD desde jsDelivr (funciona sin import/export) -->
-  <script src="https://cdn.jsdelivr.net/npm/@faker-js/faker@7.6.0/dist/faker.umd.min.js"></script>
+  <!-- Faker UMD clásica estable -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
   <script>
     function generar() {
-      const f = window.faker; // acceso global
-      // Nos aseguramos de usar datos en inglés de EE.UU.
-      f.setLocale('en');
+      faker.locale = "en"; // datos de EE.UU.
 
-      const nombre = f.name.firstName();
-      const apellido = f.name.lastName();
-      const direccion = f.address.streetAddress();
-      const ciudad = f.address.city();
-      const estado = f.address.state();
-      const zip = f.address.zipCode();
-      const telefono = f.phone.phoneNumber();
-      const ssn = f.helpers.replaceSymbolWithNumber("###-##-####");
+      const nombre = faker.name.firstName();
+      const apellido = faker.name.lastName();
+      const direccion = faker.address.streetAddress();
+      const ciudad = faker.address.city();
+      const estado = faker.address.state();
+      const zip = faker.address.zipCode();
+      const telefono = faker.phone.phoneNumber();
+      const ssn = faker.helpers.replaceSymbolWithNumber("###-##-####");
 
       document.getElementById("resultado").innerHTML = `
         <p><b>Nombre:</b> ${nombre} ${apellido}</p>
         <p><b>Dirección:</b> ${direccion}, ${ciudad}, ${estado} ${zip}</p>
         <p><b>Teléfono:</b> ${telefono}</p>
-        <p><b>SSN:<
+        <p><b>SSN:</b> ${ssn}</p>
+      `;
+    }
+  </script>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; }
+    button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+    #resultado { margin-top: 20px; padding: 15px; background: #f9f9f9; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Generador FakeName (EE.UU.)</h1>
+  <p>Haz clic en el botón para generar datos falsos de EE.UU.</p>
+  <button onclick="generar()">Generar</button>
+  <div id="resultado"></div>
+</body>
+</html>
