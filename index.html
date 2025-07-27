@@ -1,122 +1,112 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>Generadores de Tarjetas</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generadores Luhn, Damm y Verhoeff</title>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
   <style>
     body {
-      background-color: black;
-      color: #00ff00;
-      font-family: 'Courier New', monospace;
+      background-color: #000;
+      color: #ccc;
+      font-family: Arial, sans-serif;
+      padding: 20px;
     }
+
     .generator-container {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-around;
-      gap: 40px;
-      margin: 40px;
-    }
-    .generator {
-      border: 2px solid #00ff00;
+      background-color: #111;
       border-radius: 10px;
       padding: 20px;
-      width: 300px;
-      background-color: #111;
-      box-shadow: 0 0 20px #00ff00;
+      margin-bottom: 30px;
+      box-shadow: 0 0 10px #0f0a;
     }
-    .generator h2 {
-      font-size: 20px;
-      text-align: center;
-      color: #00ff00;
+
+    .generator-container h2 {
+      font-family: 'Share Tech Mono', monospace;
+      color: #00ff88;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
     }
-    textarea, input {
-      width: 100%;
-      margin-top: 10px;
-      background-color: black;
-      color: #00ff00;
-      border: 1px solid #00ff00;
-      font-family: monospace;
-    }
-    button {
-      margin-top: 10px;
-      width: 100%;
-      background-color: #00ff00;
-      color: black;
-      font-weight: bold;
-      border: none;
+
+    input, button {
       padding: 10px;
+      margin: 5px 0;
+      font-size: 16px;
+      border-radius: 5px;
+      border: none;
+    }
+
+    input {
+      width: 200px;
+    }
+
+    button {
+      background-color: #00ff88;
+      color: #000;
       cursor: pointer;
     }
+
     button:hover {
-      background-color: #33ff33;
+      background-color: #00cc66;
+    }
+
+    p {
+      margin-top: 10px;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
 
+  <!-- Generador Luhn -->
   <div class="generator-container">
+    <h2>Generador Luhn</h2>
+    <input type="text" id="luhnInput" placeholder="Ingresa base numérica" />
+    <button onclick="generateLuhn()">Generar</button>
+    <p id="luhnResult"></p>
+  </div>
 
-    <!-- Generador Luhn -->
-    <div class="generator">
-      <h2>Generador Luhn</h2>
-      <input type="text" id="binLuhn" placeholder="BIN con x (Ej: 532610xxxxxxxxxx)">
-      <input type="number" id="cantidadLuhn" placeholder="Cantidad">
-      <textarea id="resultadoLuhn" rows="10"></textarea>
-      <button onclick="generateLuhn()">Generar</button>
-    </div>
+  <!-- Generador Damm -->
+  <div class="generator-container">
+    <h2>Generador Damm</h2>
+    <input type="text" id="dammInput" placeholder="Ingresa base numérica" />
+    <button onclick="generateDamm()">Generar</button>
+    <p id="dammResult"></p>
+  </div>
 
-    <!-- Generador Damm -->
-    <div class="generator">
-      <h2>Generador Damm</h2>
-      <input type="text" id="binDamm" placeholder="BIN con x (Ej: 532610xxxxxxxxxx)">
-      <input type="number" id="cantidadDamm" placeholder="Cantidad">
-      <textarea id="resultadoDamm" rows="10"></textarea>
-      <button onclick="generateDamm()">Generar</button>
-    </div>
-
-    <!-- Generador Verhoeff -->
-    <div class="generator">
-      <h2>Generador Verhoeff</h2>
-      <input type="text" id="binVerhoeff" placeholder="BIN con x (Ej: 532610xxxxxxxxxx)">
-      <input type="number" id="cantidadVerhoeff" placeholder="Cantidad">
-      <textarea id="resultadoVerhoeff" rows="10"></textarea>
-      <button onclick="generateVerhoeff()">Generar</button>
-    </div>
-
+  <!-- Generador Verhoeff -->
+  <div class="generator-container">
+    <h2>Generador Verhoeff</h2>
+    <input type="text" id="verhoeffInput" placeholder="Ingresa base numérica" />
+    <button onclick="generateVerhoeff()">Generar</button>
+    <p id="verhoeffResult"></p>
   </div>
 
   <script>
-    function generateRandomDate() {
-      let month = ('0' + (Math.floor(Math.random() * 12) + 1)).slice(-2);
-      let year = (Math.floor(Math.random() * 6) + 25).toString(); // 25-30
-      let cvv = ('00' + Math.floor(Math.random() * 1000)).slice(-3);
-      return `|${month}|${year}|${cvv}`;
-    }
-
     // Luhn
-    function luhnCheck(num) {
-      let arr = (num + '').split('').reverse().map(x => parseInt(x));
-      let sum = arr.reduce((acc, val, i) =>
-        acc + (i % 2 ? ((val *= 2) > 9 ? val - 9 : val) : val), 0);
-      return sum % 10 === 0;
-    }
     function generateLuhn() {
-      let bin = document.getElementById("binLuhn").value;
-      let cantidad = parseInt(document.getElementById("cantidadLuhn").value);
-      let resultado = [];
-
-      for (let i = 0; i < cantidad; i++) {
-        let num = bin;
-        while (num.includes('x')) {
-          num = num.replace('x', Math.floor(Math.random() * 10));
-        }
-        if (luhnCheck(num)) {
-          resultado.push(num + generateRandomDate());
-        } else {
-          i--;
-        }
+      let input = document.getElementById('luhnInput').value;
+      if (!/^\d+$/.test(input)) {
+        document.getElementById('luhnResult').textContent = 'Solo se permiten números';
+        return;
       }
-      document.getElementById("resultadoLuhn").value = resultado.join('\n');
+
+      let sum = 0, shouldDouble = false;
+      for (let i = input.length - 1; i >= 0; i--) {
+        let digit = parseInt(input[i]);
+        if (shouldDouble) {
+          digit *= 2;
+          if (digit > 9) digit -= 9;
+        }
+        sum += digit;
+        shouldDouble = !shouldDouble;
+      }
+
+      let checkDigit = (10 - (sum % 10)) % 10;
+      document.getElementById('luhnResult').textContent = 'Resultado: ' + input + checkDigit;
     }
 
     // Damm
@@ -132,30 +122,20 @@
       [9,4,3,8,6,1,7,2,0,5],
       [2,5,8,1,4,3,6,7,9,0]
     ];
-    function dammCheck(num) {
-      let interim = 0;
-      for (let i = 0; i < num.length; i++) {
-        interim = dammTable[interim][parseInt(num.charAt(i))];
-      }
-      return interim === 0;
-    }
-    function generateDamm() {
-      let bin = document.getElementById("binDamm").value;
-      let cantidad = parseInt(document.getElementById("cantidadDamm").value);
-      let resultado = [];
 
-      for (let i = 0; i < cantidad; i++) {
-        let num = bin;
-        while (num.includes('x')) {
-          num = num.replace('x', Math.floor(Math.random() * 10));
-        }
-        if (dammCheck(num)) {
-          resultado.push(num + generateRandomDate());
-        } else {
-          i--;
-        }
+    function generateDamm() {
+      let input = document.getElementById('dammInput').value;
+      if (!/^\d+$/.test(input)) {
+        document.getElementById('dammResult').textContent = 'Solo se permiten números';
+        return;
       }
-      document.getElementById("resultadoDamm").value = resultado.join('\n');
+
+      let interim = 0;
+      for (let i = 0; i < input.length; i++) {
+        interim = dammTable[interim][parseInt(input[i])];
+      }
+
+      document.getElementById('dammResult').textContent = 'Resultado: ' + input + interim;
     }
 
     // Verhoeff
@@ -171,6 +151,7 @@
       [8,7,6,5,9,3,2,1,0,4],
       [9,8,7,6,5,4,3,2,1,0]
     ];
+
     const verhoeffP = [
       [0,1,2,3,4,5,6,7,8,9],
       [1,5,7,6,2,8,3,0,9,4],
@@ -181,34 +162,24 @@
       [2,7,9,3,8,0,6,4,1,5],
       [7,0,4,6,9,1,3,2,5,8]
     ];
+
     const verhoeffInv = [0,4,3,2,1,5,6,7,8,9];
 
-    function verhoeffCheck(num) {
-      let c = 0;
-      let numArr = num.split('').reverse().map(Number);
-      for (let i = 0; i < numArr.length; i++) {
-        c = verhoeffD[c][verhoeffP[i % 8][numArr[i]]];
-      }
-      return c === 0;
-    }
-
     function generateVerhoeff() {
-      let bin = document.getElementById("binVerhoeff").value;
-      let cantidad = parseInt(document.getElementById("cantidadVerhoeff").value);
-      let resultado = [];
-
-      for (let i = 0; i < cantidad; i++) {
-        let num = bin;
-        while (num.includes('x')) {
-          num = num.replace('x', Math.floor(Math.random() * 10));
-        }
-        if (verhoeffCheck(num)) {
-          resultado.push(num + generateRandomDate());
-        } else {
-          i--;
-        }
+      let input = document.getElementById('verhoeffInput').value;
+      if (!/^\d+$/.test(input)) {
+        document.getElementById('verhoeffResult').textContent = 'Solo se permiten números';
+        return;
       }
-      document.getElementById("resultadoVerhoeff").value = resultado.join('\n');
+
+      let c = 0;
+      let reversed = input.split('').reverse().map(Number);
+      for (let i = 0; i < reversed.length; i++) {
+        c = verhoeffD[c][verhoeffP[(i + 1) % 8][reversed[i]]];
+      }
+
+      let checkDigit = verhoeffInv[c];
+      document.getElementById('verhoeffResult').textContent = 'Resultado: ' + input + checkDigit;
     }
   </script>
 </body>
