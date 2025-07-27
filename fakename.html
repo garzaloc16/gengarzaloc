@@ -3,18 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <title>FakeName Generator - USA</title>
-  <script type="module">
-    import { faker } from "https://cdn.skypack.dev/@faker-js/faker";
-
+  <!-- Cargamos la versión global de Faker -->
+  <script src="https://cdn.jsdelivr.net/npm/@faker-js/faker@8.0.2/dist/faker.umd.min.js"></script>
+  <script>
     function generar() {
-      const nombre = faker.person.firstName('male');
-      const apellido = faker.person.lastName();
-      const direccion = faker.location.streetAddress();
-      const ciudad = faker.location.city();
-      const estado = faker.location.state();
-      const zip = faker.location.zipCode();
-      const telefono = faker.phone.number();
-      const ssn = faker.helpers.replaceSymbolWithNumber("###-##-####");
+      const f = window.faker; // usar la versión global
+      const nombre = f.person.firstName('male');
+      const apellido = f.person.lastName();
+      const direccion = f.location.streetAddress();
+      const ciudad = f.location.city();
+      const estado = f.location.state();
+      const zip = f.location.zipCode();
+      const telefono = f.phone.number();
+      const ssn = f.helpers.replaceSymbolWithNumber("###-##-####");
 
       document.getElementById("resultado").innerHTML = `
         <p><b>Nombre:</b> ${nombre} ${apellido}</p>
@@ -23,8 +24,6 @@
         <p><b>SSN:</b> ${ssn}</p>
       `;
     }
-
-    window.generar = generar;
   </script>
   <style>
     body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; }
