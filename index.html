@@ -1,255 +1,215 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Generadores Luhn y Damm</title>
+  <meta charset="UTF-8">
+  <title>Generadores de Tarjetas</title>
   <style>
-  body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #000;
-    margin: 0;
-    padding: 0;
-    color: #fff;
-    position: relative;
-    overflow-x: hidden;
-  }
-
-  canvas#matrix {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-  }
-
-  .generator-container {
-    display: flex;
-    gap: 40px;
-    padding: 40px 20px;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .generator {
-    border: 1px solid #ccc;
-    padding: 20px;
-    width: 300px;
-    background: rgba(0, 0, 0, 0.85);
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-    transition: transform 0.2s ease;
-  }
-
-  .generator:hover {
-    transform: translateY(-5px);
-  }
-
-  .generator h2 {
-    margin-top: 0;
-    text-align: center;
-    font-family: 'Courier New', monospace;
-    color: #00ff80; /* verde tecnologico */
-  }
-
-  .generator label {
-    display: block;
-    margin-top: 10px;
-    font-weight: bold;
-  }
-
-  .generator input,
-  .generator select {
-    width: 100%;
-    padding: 6px;
-    margin-top: 4px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-  }
-
-  .generator button {
-    margin-top: 12px;
-    padding: 10px;
-    width: 100%;
-    background-color: #00ff80;
-    color: #000;
-    border: none;
-    border-radius: 5px;
-    font-weight: bold;
-    cursor: pointer;
-    transition: background 0.2s ease;
-  }
-
-  .generator button:hover {
-    background-color: #00cc66;
-  }
-
-  .generator pre {
-    margin-top: 12px;
-    background: #111;
-    color: #0f0;
-    padding: 10px;
-    height: 120px;
-    overflow-y: auto;
-    border-radius: 5px;
-    font-family: monospace;
-    border: 1px solid #444;
-  }
-</style>
+    body {
+      background-color: black;
+      color: #00ff00;
+      font-family: 'Courier New', monospace;
+    }
+    .generator-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      gap: 40px;
+      margin: 40px;
+    }
+    .generator {
+      border: 2px solid #00ff00;
+      border-radius: 10px;
+      padding: 20px;
+      width: 300px;
+      background-color: #111;
+      box-shadow: 0 0 20px #00ff00;
+    }
+    .generator h2 {
+      font-size: 20px;
+      text-align: center;
+      color: #00ff00;
+    }
+    textarea, input {
+      width: 100%;
+      margin-top: 10px;
+      background-color: black;
+      color: #00ff00;
+      border: 1px solid #00ff00;
+      font-family: monospace;
+    }
+    button {
+      margin-top: 10px;
+      width: 100%;
+      background-color: #00ff00;
+      color: black;
+      font-weight: bold;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #33ff33;
+    }
+  </style>
 </head>
 <body>
-<canvas id="matrix"></canvas>
+
   <div class="generator-container">
+
+    <!-- Generador Luhn -->
     <div class="generator">
       <h2>Generador Luhn</h2>
-      <input id="luhnBase" type="text" placeholder="Ej: 453987010293xxxx" maxlength="16">
-      <input id="luhnMonth" type="text" placeholder="Mes (01-12)" maxlength="2">
-      <input id="luhnYear" type="text" placeholder="Año (2025-2031)" maxlength="4">
-      <input id="luhnCVV" type="text" placeholder="CVV (opcional)" maxlength="3">
-      <input id="luhnCount" type="number" placeholder="Cantidad" min="1" value="1">
+      <input type="text" id="binLuhn" placeholder="BIN con x (Ej: 532610xxxxxxxxxx)">
+      <input type="number" id="cantidadLuhn" placeholder="Cantidad">
+      <textarea id="resultadoLuhn" rows="10"></textarea>
       <button onclick="generateLuhn()">Generar</button>
-      <pre id="luhnResult"></pre>
-      <button onclick="copyToClipboard('luhnResult')">Copiar todo</button>
     </div>
 
+    <!-- Generador Damm -->
     <div class="generator">
       <h2>Generador Damm</h2>
-      <input id="dammBase" type="text" placeholder="Ej: 453987010293xxxx" maxlength="16">
-      <input id="dammMonth" type="text" placeholder="Mes (01-12)" maxlength="2">
-      <input id="dammYear" type="text" placeholder="Año (2025-2031)" maxlength="4">
-      <input id="dammCVV" type="text" placeholder="CVV (opcional)" maxlength="3">
-      <input id="dammCount" type="number" placeholder="Cantidad" min="1" value="1">
+      <input type="text" id="binDamm" placeholder="BIN con x (Ej: 532610xxxxxxxxxx)">
+      <input type="number" id="cantidadDamm" placeholder="Cantidad">
+      <textarea id="resultadoDamm" rows="10"></textarea>
       <button onclick="generateDamm()">Generar</button>
-      <pre id="dammResult"></pre>
-      <button onclick="copyToClipboard('dammResult')">Copiar todo</button>
     </div>
+
+    <!-- Generador Verhoeff -->
+    <div class="generator">
+      <h2>Generador Verhoeff</h2>
+      <input type="text" id="binVerhoeff" placeholder="BIN con x (Ej: 532610xxxxxxxxxx)">
+      <input type="number" id="cantidadVerhoeff" placeholder="Cantidad">
+      <textarea id="resultadoVerhoeff" rows="10"></textarea>
+      <button onclick="generateVerhoeff()">Generar</button>
+    </div>
+
   </div>
 
-<script>
-function generateLuhn() {
-  const base = document.getElementById('luhnBase').value.trim();
-  const month = document.getElementById('luhnMonth').value.trim();
-  const year = document.getElementById('luhnYear').value.trim();
-  const cvvInput = document.getElementById('luhnCVV').value.trim();
-  const count = parseInt(document.getElementById('luhnCount').value);
-  const output = document.getElementById('luhnResult');
-
-  if (!base.includes('x')) return alert("Incluye 'x' en el número base");
-
-  let results = [];
-  let generated = new Set();
-
-  while (results.length < count) {
-    let current = '';
-    for (let c of base) {
-      current += c === 'x' ? Math.floor(Math.random() * 10) : c;
+  <script>
+    function generateRandomDate() {
+      let month = ('0' + (Math.floor(Math.random() * 12) + 1)).slice(-2);
+      let year = (Math.floor(Math.random() * 6) + 25).toString(); // 25-30
+      let cvv = ('00' + Math.floor(Math.random() * 1000)).slice(-3);
+      return `|${month}|${year}|${cvv}`;
     }
-    if (luhnCheck(current) && !generated.has(current)) {
-      const cvv = cvvInput || String(Math.floor(Math.random() * 900) + 100);
-      results.push(`${current}|${month}|${year}|${cvv}`);
-      generated.add(current);
+
+    // Luhn
+    function luhnCheck(num) {
+      let arr = (num + '').split('').reverse().map(x => parseInt(x));
+      let sum = arr.reduce((acc, val, i) =>
+        acc + (i % 2 ? ((val *= 2) > 9 ? val - 9 : val) : val), 0);
+      return sum % 10 === 0;
     }
-  }
-  output.textContent = results.join('\n');
-}
+    function generateLuhn() {
+      let bin = document.getElementById("binLuhn").value;
+      let cantidad = parseInt(document.getElementById("cantidadLuhn").value);
+      let resultado = [];
 
-function luhnCheck(number) {
-  let sum = 0;
-  let shouldDouble = false;
-  for (let i = number.length - 1; i >= 0; i--) {
-    let digit = parseInt(number[i]);
-    if (shouldDouble) {
-      digit *= 2;
-      if (digit > 9) digit -= 9;
+      for (let i = 0; i < cantidad; i++) {
+        let num = bin;
+        while (num.includes('x')) {
+          num = num.replace('x', Math.floor(Math.random() * 10));
+        }
+        if (luhnCheck(num)) {
+          resultado.push(num + generateRandomDate());
+        } else {
+          i--;
+        }
+      }
+      document.getElementById("resultadoLuhn").value = resultado.join('\n');
     }
-    sum += digit;
-    shouldDouble = !shouldDouble;
-  }
-  return sum % 10 === 0;
-}
 
-function generateDamm() {
-  const base = document.getElementById('dammBase').value.trim();
-  const month = document.getElementById('dammMonth').value.trim();
-  const year = document.getElementById('dammYear').value.trim();
-  const cvvInput = document.getElementById('dammCVV').value.trim();
-  const count = parseInt(document.getElementById('dammCount').value);
-  const output = document.getElementById('dammResult');
-
-  if (!base.includes('x')) return alert("Incluye 'x' en el número base");
-
-  let results = [];
-  let generated = new Set();
-
-  while (results.length < count) {
-    let current = '';
-    for (let c of base) {
-      current += c === 'x' ? Math.floor(Math.random() * 10) : c;
+    // Damm
+    const dammTable = [
+      [0,3,1,7,5,9,8,6,4,2],
+      [7,0,9,2,1,5,4,8,6,3],
+      [4,2,0,6,8,7,1,3,5,9],
+      [1,7,5,0,9,8,3,4,2,6],
+      [6,1,2,3,0,4,5,9,7,8],
+      [3,6,7,4,2,0,9,5,8,1],
+      [5,8,6,9,7,2,0,1,3,4],
+      [8,9,4,5,3,6,2,0,1,7],
+      [9,4,3,8,6,1,7,2,0,5],
+      [2,5,8,1,4,3,6,7,9,0]
+    ];
+    function dammCheck(num) {
+      let interim = 0;
+      for (let i = 0; i < num.length; i++) {
+        interim = dammTable[interim][parseInt(num.charAt(i))];
+      }
+      return interim === 0;
     }
-    if (dammCheck(current) && !generated.has(current)) {
-      const cvv = cvvInput || String(Math.floor(Math.random() * 900) + 100);
-      results.push(`${current}|${month}|${year}|${cvv}`);
-      generated.add(current);
+    function generateDamm() {
+      let bin = document.getElementById("binDamm").value;
+      let cantidad = parseInt(document.getElementById("cantidadDamm").value);
+      let resultado = [];
+
+      for (let i = 0; i < cantidad; i++) {
+        let num = bin;
+        while (num.includes('x')) {
+          num = num.replace('x', Math.floor(Math.random() * 10));
+        }
+        if (dammCheck(num)) {
+          resultado.push(num + generateRandomDate());
+        } else {
+          i--;
+        }
+      }
+      document.getElementById("resultadoDamm").value = resultado.join('\n');
     }
-  }
-  output.textContent = results.join('\n');
-}
 
-function dammCheck(number) {
-  const table = [
-    [0,3,1,7,5,9,8,6,4,2],
-    [7,0,9,2,1,5,4,8,6,3],
-    [4,2,0,6,8,7,1,3,5,9],
-    [1,7,5,0,9,8,3,4,2,6],
-    [6,1,2,3,0,4,5,9,7,8],
-    [3,6,7,4,2,0,9,5,8,1],
-    [5,8,6,9,7,2,0,1,3,4],
-    [8,9,4,5,3,6,2,0,1,7],
-    [9,4,3,8,6,1,7,2,0,5],
-    [2,5,8,1,4,3,6,7,9,0]
-  ];
-  let interim = 0;
-  for (let digit of number) {
-    interim = table[interim][parseInt(digit)];
-  }
-  return interim === 0;
-}
+    // Verhoeff
+    const verhoeffD = [
+      [0,1,2,3,4,5,6,7,8,9],
+      [1,2,3,4,0,6,7,8,9,5],
+      [2,3,4,0,1,7,8,9,5,6],
+      [3,4,0,1,2,8,9,5,6,7],
+      [4,0,1,2,3,9,5,6,7,8],
+      [5,9,8,7,6,0,4,3,2,1],
+      [6,5,9,8,7,1,0,4,3,2],
+      [7,6,5,9,8,2,1,0,4,3],
+      [8,7,6,5,9,3,2,1,0,4],
+      [9,8,7,6,5,4,3,2,1,0]
+    ];
+    const verhoeffP = [
+      [0,1,2,3,4,5,6,7,8,9],
+      [1,5,7,6,2,8,3,0,9,4],
+      [5,8,0,3,7,9,6,1,4,2],
+      [8,9,1,6,0,4,3,5,2,7],
+      [9,4,5,3,1,2,6,8,7,0],
+      [4,2,8,6,5,7,3,9,0,1],
+      [2,7,9,3,8,0,6,4,1,5],
+      [7,0,4,6,9,1,3,2,5,8]
+    ];
+    const verhoeffInv = [0,4,3,2,1,5,6,7,8,9];
 
-function copyToClipboard(elementId) {
-  const text = document.getElementById(elementId).textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    alert('Copiado al portapapeles');
-  }).catch(err => {
-    alert('Error al copiar');
-    console.error(err);
-  });
-}
+    function verhoeffCheck(num) {
+      let c = 0;
+      let numArr = num.split('').reverse().map(Number);
+      for (let i = 0; i < numArr.length; i++) {
+        c = verhoeffD[c][verhoeffP[i % 8][numArr[i]]];
+      }
+      return c === 0;
+    }
 
-// Matrix effect
-const canvas = document.getElementById("matrix");
-const ctx = canvas.getContext("2d");
-canvas.height = window.innerHeight;
-canvas.width = window.innerWidth;
-const letters = "01".split("");
-const fontSize = 14;
-const columns = canvas.width / fontSize;
-const drops = Array(Math.floor(columns)).fill(1);
+    function generateVerhoeff() {
+      let bin = document.getElementById("binVerhoeff").value;
+      let cantidad = parseInt(document.getElementById("cantidadVerhoeff").value);
+      let resultado = [];
 
-function drawMatrix() {
-  ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = "#0f0";
-  ctx.font = fontSize + "px monospace";
-  drops.forEach((y, i) => {
-    const text = letters[Math.floor(Math.random() * letters.length)];
-    ctx.fillText(text, i * fontSize, y * fontSize);
-    if (y * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-    drops[i]++;
-  });
-}
-setInterval(drawMatrix, 33);
-</script>
+      for (let i = 0; i < cantidad; i++) {
+        let num = bin;
+        while (num.includes('x')) {
+          num = num.replace('x', Math.floor(Math.random() * 10));
+        }
+        if (verhoeffCheck(num)) {
+          resultado.push(num + generateRandomDate());
+        } else {
+          i--;
+        }
+      }
+      document.getElementById("resultadoVerhoeff").value = resultado.join('\n');
+    }
+  </script>
 </body>
 </html>
