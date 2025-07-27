@@ -1,6 +1,130 @@
 <!DOCTYPE html>
 <html lang="es">
+<!DOCTYPE html>
+<html lang="es">
 <head>
+  <meta charset="UTF-8">
+  <title>FakeName Generator - USA</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js"></script>
+  <style>
+    /* Fondo negro total */
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+      color: #fff;
+    }
+
+    /* Canvas ocupa toda la pantalla */
+    canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1; /* detrás del contenido */
+      background: #000;
+    }
+
+    /* Contenedor principal */
+    .container {
+      position: relative;
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      background: rgba(0,0,0,0.6);
+      border-radius: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #resultado {
+      margin-top: 20px;
+      padding: 15px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <!-- Canvas para el efecto Matrix -->
+  <canvas id="matrix"></canvas>
+
+  <div class="container">
+    <h1>Generador FakeName (EE.UU.)</h1>
+    <p>Haz clic en el botón para generar datos falsos de EE.UU.</p>
+    <button onclick="generar()">Generar</button>
+    <div id="resultado"></div>
+  </div>
+
+  <script>
+    // Generador de datos
+    function generar() {
+      faker.locale = "en";
+
+      const nombre = faker.name.firstName();
+      const apellido = faker.name.lastName();
+      const direccion = faker.address.streetAddress();
+      const ciudad = faker.address.city();
+      const estado = faker.address.state();
+      const zip = faker.address.zipCode();
+      const telefono = faker.phone.phoneNumber();
+      const ssn = faker.helpers.replaceSymbolWithNumber("###-##-####");
+
+      document.getElementById("resultado").innerHTML = `
+        <p><b>Nombre:</b> ${nombre} ${apellido}</p>
+        <p><b>Dirección:</b> ${direccion}, ${ciudad}, ${estado} ${zip}</p>
+        <p><b>Teléfono:</b> ${telefono}</p>
+        <p><b>SSN:</b> ${ssn}</p>
+      `;
+    }
+
+    // Fondo estilo Matrix
+    const canvas = document.getElementById('matrix');
+    const ctx = canvas.getContext('2d');
+
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+
+    const letters = '01';
+    const fontSize = 14;
+    const columns = canvas.width / fontSize;
+    const drops = Array(Math.floor(columns)).fill(1);
+
+    function draw() {
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = '#0F0';
+      ctx.font = fontSize + 'px monospace';
+
+      for (let i = 0; i < drops.length; i++) {
+        const text = letters.charAt(Math.floor(Math.random() * letters.length));
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+        drops[i]++;
+      }
+    }
+
+    setInterval(draw, 35);
+
+    window.addEventListener('resize', () => {
+      canvas.height = window.innerHeight;
+      canvas.width = window.innerWidth;
+    });
+  </script>
+</body>
+</html>
+
+  <head>
   <meta charset="UTF-8">
   <title>FakeName Generator - USA</title>
   <!-- Faker UMD clásica estable -->
