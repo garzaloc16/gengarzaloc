@@ -52,6 +52,8 @@
       <input id="luhnCount" type="number" placeholder="Cantidad" min="1" value="1">
       <button onclick="generateLuhn()">Generar</button>
       <pre id="luhnResult"></pre>
+<button onclick="copyToClipboard('luhnResult')">Copiar todo</button>
+
     </div>
 
     <div class="generator">
@@ -63,6 +65,8 @@
       <input id="dammCount" type="number" placeholder="Cantidad" min="1" value="1">
       <button onclick="generateDamm()">Generar</button>
       <pre id="dammResult"></pre>
+<button onclick="copyToClipboard('dammResult')">Copiar todo</button>
+
     </div>
   </div>
 
@@ -155,6 +159,16 @@
       }
       return interim === 0;
     }
+  function copyToClipboard(elementId) {
+  const text = document.getElementById(elementId).textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    alert('Copiado al portapapeles');
+  }).catch(err => {
+    alert('Error al copiar');
+    console.error(err);
+  });
+}
+
   </script>
 </body>
 </html>
