@@ -83,7 +83,22 @@
     font-family: monospace;
     border: 1px solid #ccc;
   }
-</style>
+#matrix {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  width: 100vw;
+  height: 100vh;
+  background: black;
+}
+
+.generator-container {
+  position: relative;
+  z-index: 1;
+}
+
+  </style>
 
 </head>
 <body>
@@ -213,7 +228,50 @@
     console.error(err);
   });
 }
+// Fondo estilo Matrix
+const canvas = document.getElementById("matrix");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let chars = "アァイィウヴエカガキギクグケコサザシジスズセソタチッツヅテトナニヌネノハバパヒビピフブプヘホマミムメモヤユヨラリルレロワヲンABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+chars = chars.split("");
+
+let fontSize = 14;
+let columns = canvas.width / fontSize;
+let drops = Array(Math.floor(columns)).fill(1);
+
+function draw() {
+  ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  ctx.fillStyle = "#0F0";
+  ctx.font = fontSize + "px monospace";
+
+  for (let i = 0; i < drops.length; i++) {
+    let char = chars[Math.floor(Math.random() * chars.length)];
+    ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+
+    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+      drops[i] = 0;
+    }
+
+    drops[i]++;
+  }
+}
+
+setInterval(draw, 33);
+
+window.addEventListener("resize", () => {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  columns = canvas.width / fontSize;
+  drops = Array(Math.floor(columns)).fill(1);
+});
 
   </script>
+  <canvas id="matrix"></canvas>
+
 </body>
 </html>
