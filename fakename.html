@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>FakeName Generator - USA</title>
+  <script type="module">
+    import { faker } from "https://cdn.skypack.dev/@faker-js/faker";
+
+    function generar() {
+      const nombre = faker.person.firstName('male');
+      const apellido = faker.person.lastName();
+      const direccion = faker.location.streetAddress();
+      const ciudad = faker.location.city();
+      const estado = faker.location.state();
+      const zip = faker.location.zipCode();
+      const telefono = faker.phone.number();
+      const ssn = faker.helpers.replaceSymbolWithNumber("###-##-####");
+
+      document.getElementById("resultado").innerHTML = `
+        <p><b>Nombre:</b> ${nombre} ${apellido}</p>
+        <p><b>Dirección:</b> ${direccion}, ${ciudad}, ${estado} ${zip}</p>
+        <p><b>Teléfono:</b> ${telefono}</p>
+        <p><b>SSN:</b> ${ssn}</p>
+      `;
+    }
+
+    window.generar = generar;
+  </script>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 600px; margin: 40px auto; }
+    button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+    #resultado { margin-top: 20px; padding: 15px; background: #f9f9f9; border-radius: 5px; }
+  </style>
+</head>
+<body>
+  <h1>Generador FakeName (EE.UU.)</h1>
+  <p>Haz clic en el botón para generar datos falsos de EE.UU.</p>
+  <button onclick="generar()">Generar</button>
+  <div id="resultado"></div>
+</body>
+</html>
