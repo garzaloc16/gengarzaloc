@@ -10,7 +10,7 @@
       padding: 0;
       overflow: hidden;
       font-family: Arial, sans-serif;
-      color: #00ff00; /* Texto verde general */
+      color: #00ff00;
     }
 
     canvas {
@@ -26,10 +26,18 @@
     .container {
       position: relative;
       max-width: 600px;
-      margin: 40px auto;
+      margin: 60px auto;
       padding: 20px;
-      background: rgba(0,0,0,0.6);
+      background: rgba(0, 0, 0, 0.6);
       border-radius: 10px;
+      text-align: center;
+    }
+
+    h1 {
+      color: #00ff00;
+    }
+
+    p {
       color: #00ff00;
     }
 
@@ -46,14 +54,14 @@
     #resultado {
       margin-top: 20px;
       padding: 15px;
-      background: #fff; /* Fondo blanco */
+      background: white;
+      color: black;
       border-radius: 5px;
-      color: #000; /* Texto negro */
+      text-align: left;
     }
   </style>
 </head>
 <body>
-  <!-- Canvas para el efecto Matrix -->
   <canvas id="matrix"></canvas>
 
   <div class="container">
@@ -64,6 +72,44 @@
   </div>
 
   <script>
+    // Fondo estilo Matrix
+    const canvas = document.getElementById("matrix");
+    const ctx = canvas.getContext("2d");
+
+    canvas.height = window.innerHeight;
+    canvas.width = window.innerWidth;
+
+    const letters = "01";
+    const fontSize = 14;
+    const columns = canvas.width / fontSize;
+    const drops = Array(Math.floor(columns)).fill(1);
+
+    function draw() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = "#0F0";
+      ctx.font = fontSize + "px monospace";
+
+      for (let i = 0; i < drops.length; i++) {
+        const text = letters.charAt(Math.floor(Math.random() * letters.length));
+        ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+          drops[i] = 0;
+        }
+
+        drops[i]++;
+      }
+    }
+
+    setInterval(draw, 35);
+
+    window.addEventListener("resize", () => {
+      canvas.height = window.innerHeight;
+      canvas.width = window.innerWidth;
+    });
+
     // Generador de datos
     function generar() {
       faker.locale = "en";
@@ -84,12 +130,6 @@
         <p><b>SSN:</b> ${ssn}</p>
       `;
     }
-
-    // Fondo estilo Matrix
-    const canvas = document.getElementById('matrix');
-    const ctx = canvas.getContext('2d');
-
-    canvas.height = window.innerHeight;
-    canvas.width = window.innerWidth;
-
-    const letters = '01';
+  </script>
+</body>
+</html>
