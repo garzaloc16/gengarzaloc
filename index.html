@@ -5,41 +5,86 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Generadores Luhn y Damm</title>
   <style>
-    .generator-container {
-      display: flex;
-      gap: 40px;
-      padding: 20px;
-      flex-wrap: wrap;
-    }
-    .generator {
-      border: 1px solid #ccc;
-      padding: 20px;
-      width: 300px;
-      background: #f9f9f9;
-      border-radius: 8px;
-    }
-    .generator label {
-      display: block;
-      margin-top: 10px;
-    }
-    .generator input,
-    .generator select {
-      width: 100%;
-      padding: 5px;
-    }
-    .generator button {
-      margin-top: 10px;
-      padding: 8px;
-      width: 100%;
-    }
-    .generator pre {
-      margin-top: 10px;
-      background: #eee;
-      padding: 10px;
-      height: 120px;
-      overflow-y: auto;
-    }
-  </style>
+  body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #f0f2f5;
+    margin: 0;
+    padding: 0;
+  }
+
+  .generator-container {
+    display: flex;
+    gap: 40px;
+    padding: 40px 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .generator {
+    border: 1px solid #ccc;
+    padding: 20px;
+    width: 300px;
+    background: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease;
+  }
+
+  .generator:hover {
+    transform: translateY(-5px);
+  }
+
+  .generator h2 {
+    margin-top: 0;
+    color: #333;
+    text-align: center;
+  }
+
+  .generator label {
+    display: block;
+    margin-top: 10px;
+    font-weight: bold;
+  }
+
+  .generator input,
+  .generator select {
+    width: 100%;
+    padding: 6px;
+    margin-top: 4px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+
+  .generator button {
+    margin-top: 12px;
+    padding: 10px;
+    width: 100%;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .generator button:hover {
+    background-color: #0056b3;
+  }
+
+  .generator pre {
+    margin-top: 12px;
+    background: #f5f5f5;
+    padding: 10px;
+    height: 120px;
+    overflow-y: auto;
+    border-radius: 5px;
+    font-family: monospace;
+    border: 1px solid #ccc;
+  }
+</style>
+
 </head>
 <body>
   <div class="generator-container">
