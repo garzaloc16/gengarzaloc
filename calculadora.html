@@ -3,286 +3,223 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculadora de Ganancias ML</title>
+  <title>Calculadoras MercadoLibre</title>
   <style>
     body {
+      background-color: #ffeb3b; /* Amarillo MercadoLibre */
+      margin: 0;
       font-family: Arial, sans-serif;
-      max-width: 800px;
+    }
+
+    .container {
+      max-width: 500px;
       margin: 0 auto;
       padding: 20px;
-      background: #fff159; /* Amarillo MercadoLibre */
-      color: #333;
     }
-    header {
+
+    .card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+      margin-bottom: 30px;
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    .logo {
       display: flex;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
-    header img {
+
+    .logo img {
       height: 50px;
-      margin-right: 15px;
+      margin-right: 10px;
     }
-    h1 { text-align: center; margin-top: 0; }
-    label { display: block; margin-top: 15px; }
+
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+
     input, select {
       width: 100%;
       padding: 8px;
       margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
     }
+
     button {
-      margin-top: 20px;
-      padding: 10px;
-      width: 100%;
       background: #007bff;
-      color: #fff;
+      color: white;
       border: none;
+      padding: 10px;
+      margin-top: 15px;
+      border-radius: 5px;
       cursor: pointer;
+      width: 100%;
       font-size: 16px;
     }
-    .result { background: #fff; padding: 15px; margin-top: 20px; border-radius: 5px; }
-    canvas { margin-top: 20px; background: #fff; border-radius: 5px; padding: 10px; }
-    .card {
-      background: #f7f7f7;
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 40px;
+
+    button:hover {
+      background: #0056b3;
+    }
+
+    .result {
+      background: #fff;
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 15px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+    }
+
+    canvas {
+      margin-top: 20px;
+      max-width: 100%;
     }
   </style>
 </head>
 <body>
-  <header>
-    <img src="https://http2.mlstatic.com/frontend-assets/ui-navigation/5.18.9/mercadolibre/logo__large_plus.png" alt="MercadoLibre Logo">
-    <h1>Calculadora de Ganancia MercadoLibre</h1>
-  </header>
+  <div class="container">
 
-  <div class="card">
-    <!-- CALCULADORA 1 (NO SE TOCA) -->
-    <label>Categoría:</label>
-    <select id="categoria">
-      <option value="General/Electrónica">General/Electrónica (13% / 17%)</option>
-      <option value="Hogar/Moda">Hogar/Moda (14% / 18%)</option>
-      <option value="Belleza/Salud">Belleza/Salud (15% / 19%)</option>
-      <option value="Deportes/Juguetes">Deportes/Juguetes (16% / 20%)</option>
-    </select>
+    <!-- Calculadora 1 -->
+    <div class="card">
+      <div class="logo">
+        <img src="https://http2.mlstatic.com/frontend-assets/ml-web-navigation/ui-navigation/5.22.8/mercadolibre/logo__large_plus.png" alt="Logo">
+        <h2>Calculadora de Ganancia MercadoLibre</h2>
+      </div>
 
-    <label>Costo de compra (COP):</label>
-    <input type="number" id="compra" />
+      <label for="categoria1">Categoría:</label>
+      <select id="categoria1">
+        <option value="0.13">General/Electrónica (13% / 17%)</option>
+        <option value="0.16">Hogar (16% / 20%)</option>
+        <option value="0.17">Moda (17% / 21%)</option>
+        <option value="0.17">Belleza y Salud (17% / 21%)</option>
+        <option value="0.16">Deportes (16% / 20%)</option>
+        <option value="0.16">Juguetes (16% / 20%)</option>
+      </select>
 
-    <label>Precio de venta (COP):</label>
-    <input type="number" id="venta" />
+      <label for="costo1">Costo de compra (COP):</label>
+      <input type="number" id="costo1" placeholder="Ej: 30000">
 
-    <label>
-      <input type="checkbox" id="envio" checked />
-      Ofrezco envío gratis
-    </label>
+      <label for="precio1">Precio de venta (COP):</label>
+      <input type="number" id="precio1" placeholder="Ej: 50000">
 
-    <button onclick="calcular()">Calcular</button>
+      <label><input type="checkbox" id="envio1" checked> Ofrezco envío gratis</label>
 
-    <div class="result" id="resultado"></div>
+      <button onclick="calcular1()">Calcular</button>
 
-    <canvas id="grafico" width="400" height="200"></canvas>
+      <div id="resultado1" class="result"></div>
+      <canvas id="grafico1"></canvas>
+    </div>
+
+    <!-- Calculadora 2 -->
+    <div class="card">
+      <h2>Calculadora rápida por precio</h2>
+      <p>Ingresa cuánto quieres recibir libre (neto) y el costo de compra para saber en cuánto publicar:</p>
+
+      <label for="categoria2">Categoría:</label>
+      <select id="categoria2">
+        <option value="0.13">General/Electrónica (13% / 17%)</option>
+        <option value="0.16">Hogar (16% / 20%)</option>
+        <option value="0.17">Moda (17% / 21%)</option>
+        <option value="0.17">Belleza y Salud (17% / 21%)</option>
+        <option value="0.16">Deportes (16% / 20%)</option>
+        <option value="0.16">Juguetes (16% / 20%)</option>
+      </select>
+
+      <label for="neto2">¿Cuánto quieres recibir libre (COP)?</label>
+      <input type="number" id="neto2" placeholder="Ej: 50000">
+
+      <label for="costo2">Costo de compra (COP):</label>
+      <input type="number" id="costo2" placeholder="Ej: 30000">
+
+      <label><input type="checkbox" id="envio2" checked> Ofrezco envío gratis</label>
+
+      <button onclick="calcular2()">Calcular</button>
+
+      <div id="resultado2" class="result"></div>
+      <canvas id="grafico2"></canvas>
+    </div>
+
   </div>
 
-  <div class="card">
-    <!-- CALCULADORA 2 (ACTUALIZADA) -->
-    <h2>Calculadora rápida por precio</h2>
-    <p>Ingresa cuánto quieres recibir libre (neto) y el costo de compra para saber en cuánto publicar:</p>
-
-    <label for="categoria2">Categoría:</label>
-    <select id="categoria2">
-      <option value="General/Electrónica">General/Electrónica (13% / 17%)</option>
-      <option value="Hogar/Moda">Hogar/Moda (14% / 18%)</option>
-      <option value="Belleza/Salud">Belleza/Salud (15% / 19%)</option>
-      <option value="Deportes/Juguetes">Deportes/Juguetes (16% / 20%)</option>
-    </select>
-
-    <label for="gananciaDeseada">¿Cuánto quieres recibir libre (COP)?</label>
-    <input type="number" id="gananciaDeseada" placeholder="Ej: 50000">
-
-    <label for="precioCompra2">Costo de compra (COP):</label>
-    <input type="number" id="precioCompra2" placeholder="Ej: 30000">
-
-    <label>
-      <input type="checkbox" id="envio2" checked>
-      Ofrezco envío gratis
-    </label>
-
-    <button onclick="calcularRapido()">Calcular</button>
-
-    <div id="resultadoRapido" class="result"></div>
-
-    <canvas id="grafico2" width="400" height="200"></canvas>
-  </div>
-
-  <!-- Chart.js desde CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    const comisiones = {
-      "General/Electrónica": { Clasica: 0.13, Premium: 0.17 },
-      "Hogar/Moda": { Clasica: 0.14, Premium: 0.18 },
-      "Belleza/Salud": { Clasica: 0.15, Premium: 0.19 },
-      "Deportes/Juguetes": { Clasica: 0.16, Premium: 0.20 },
-    };
-    const CARGO_FIJO = 3000;
-    const COSTO_ENVIO = 8000;
-    let chart = null;
-    let chart2 = null;
+    // ========== CALCULADORA 1 ==========
+    function calcular1() {
+      const categoria = parseFloat(document.getElementById('categoria1').value);
+      const costo = parseFloat(document.getElementById('costo1').value);
+      const precio = parseFloat(document.getElementById('precio1').value);
+      const envioGratis = document.getElementById('envio1').checked;
+      const envio = envioGratis ? 5000 : 0; // ejemplo fijo
 
-    // CALCULADORA 1 (NO SE TOCA)
-    function calcular() {
-      const categoria = document.getElementById("categoria").value;
-      const compra = parseFloat(document.getElementById("compra").value) || 0;
-      const venta = parseFloat(document.getElementById("venta").value) || 0;
-      const envioGratis = document.getElementById("envio").checked;
+      if (isNaN(costo) || isNaN(precio)) return;
 
-      const aplicaCargo = venta < 60000;
-      const cargo = aplicaCargo ? CARGO_FIJO : 0;
-      const envio = envioGratis ? COSTO_ENVIO : 0;
+      const comisionClasica = precio * categoria;
+      const comisionPremium = precio * (categoria + 0.04);
 
-      const resultados = [];
-      for (const tipo in comisiones[categoria]) {
-        const pct = comisiones[categoria][tipo];
-        const comision = venta * pct;
-        const ganancia = venta - comision - cargo - envio - compra;
-        const margen = (ganancia / venta) * 100;
-        resultados.push({ tipo, pct: pct * 100, ganancia, margen });
-      }
+      const gananciaClasica = precio - comisionClasica - envio - costo;
+      const gananciaPremium = precio - comisionPremium - envio - costo;
 
-      let html = "<h2>Resultados</h2>";
-      resultados.forEach(r => {
-        html += `<p><b>${r.tipo}</b><br>
-                 Comisión: ${r.pct.toFixed(1)}%<br>
-                 Ganancia neta: ${r.ganancia.toFixed(0)} COP<br>
-                 Margen: ${r.margen.toFixed(2)}%</p>`;
-      });
-      document.getElementById("resultado").innerHTML = html;
+      const resultado = `
+        <p><strong>Clásica:</strong> Ganancia: $${gananciaClasica.toFixed(0)}</p>
+        <p><strong>Premium:</strong> Ganancia: $${gananciaPremium.toFixed(0)}</p>
+      `;
+      document.getElementById('resultado1').innerHTML = resultado;
 
-      const labels = resultados.map(r => r.tipo);
-      const ganancias = resultados.map(r => r.ganancia.toFixed(0));
-      const margenes = resultados.map(r => r.margen.toFixed(2));
-
-      const ctx = document.getElementById('grafico').getContext('2d');
-      if (chart) chart.destroy();
-      chart = new Chart(ctx, {
+      // gráfico
+      const ctx = document.getElementById('grafico1').getContext('2d');
+      if (window.grafico1) window.grafico1.destroy();
+      window.grafico1 = new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: labels,
-          datasets: [
-            {
-              label: 'Ganancia neta (COP)',
-              data: ganancias,
-              backgroundColor: 'rgba(75, 192, 192, 0.7)',
-              yAxisID: 'y'
-            },
-            {
-              label: 'Margen (%)',
-              data: margenes,
-              backgroundColor: 'rgba(255, 159, 64, 0.7)',
-              yAxisID: 'y1'
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          interaction: { mode: 'index', intersect: false },
-          scales: {
-            y: {
-              beginAtZero: true,
-              position: 'left',
-              title: { display: true, text: 'Ganancia neta (COP)' }
-            },
-            y1: {
-              beginAtZero: true,
-              position: 'right',
-              grid: { drawOnChartArea: false },
-              title: { display: true, text: 'Margen (%)' }
-            }
-          }
+          labels: ['Clásica', 'Premium'],
+          datasets: [{
+            label: 'Ganancia',
+            data: [gananciaClasica, gananciaPremium],
+            backgroundColor: ['#4CAF50', '#FF9800']
+          }]
         }
       });
     }
 
-    // CALCULADORA 2 (ACTUALIZADA)
-    function calcularRapido() {
-      const categoria = document.getElementById('categoria2').value;
-      const libre = parseFloat(document.getElementById('gananciaDeseada').value);
-      const compra = parseFloat(document.getElementById('precioCompra2').value);
+    // ========== CALCULADORA 2 ==========
+    function calcular2() {
+      const categoria = parseFloat(document.getElementById('categoria2').value);
+      const neto = parseFloat(document.getElementById('neto2').value);
+      const costo = parseFloat(document.getElementById('costo2').value);
       const envioGratis = document.getElementById('envio2').checked;
-      const resultadoDiv = document.getElementById('resultadoRapido');
+      const envio = envioGratis ? 5000 : 0;
 
-      if (isNaN(libre) || isNaN(compra)) {
-        resultadoDiv.innerHTML = "<b>Por favor ingresa ambos valores.</b>";
-        return;
-      }
+      if (isNaN(neto) || isNaN(costo)) return;
 
-      const envio = envioGratis ? COSTO_ENVIO : 0;
-      const cargoFijo = CARGO_FIJO;
+      const precioClasica = (neto + costo + envio) / (1 - categoria);
+      const precioPremium = (neto + costo + envio) / (1 - (categoria + 0.04));
 
-      const tipos = comisiones[categoria];
-      const resultados = [];
+      const resultado = `
+        <p><strong>Publicación Clásica:</strong> Publica a $${precioClasica.toFixed(0)}</p>
+        <p><strong>Publicación Premium:</strong> Publica a $${precioPremium.toFixed(0)}</p>
+      `;
+      document.getElementById('resultado2').innerHTML = resultado;
 
-      for (const tipo in tipos) {
-        const pct = tipos[tipo];
-        let venta = libre + compra + envio + cargoFijo;
-        venta = venta / (1 - pct);
-
-        const comision = venta * pct;
-        const ganancia = venta - comision - (venta < 60000 ? cargoFijo : 0) - envio - compra;
-        const margen = (ganancia / venta) * 100;
-
-        resultados.push({ tipo, venta, comision, ganancia, margen });
-      }
-
-      let html = "<h3>Precios sugeridos</h3>";
-      resultados.forEach(r => {
-        html += `<p><b>${r.tipo}</b><br>
-                 Precio sugerido: $${r.venta.toFixed(0)}<br>
-                 Ganancia neta: $${r.ganancia.toFixed(0)}<br>
-                 Margen: ${r.margen.toFixed(2)}%</p>`;
-      });
-      resultadoDiv.innerHTML = html;
-
-      const labels = resultados.map(r => r.tipo);
-      const ganancias = resultados.map(r => r.ganancia.toFixed(0));
-      const margenes = resultados.map(r => r.margen.toFixed(2));
-
+      // gráfico
       const ctx = document.getElementById('grafico2').getContext('2d');
-      if (chart2) chart2.destroy();
-      chart2 = new Chart(ctx, {
+      if (window.grafico2) window.grafico2.destroy();
+      window.grafico2 = new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: labels,
-          datasets: [
-            {
-              label: 'Ganancia neta (COP)',
-              data: ganancias,
-              backgroundColor: 'rgba(54, 162, 235, 0.7)',
-              yAxisID: 'y'
-            },
-            {
-              label: 'Margen (%)',
-              data: margenes,
-              backgroundColor: 'rgba(255, 206, 86, 0.7)',
-              yAxisID: 'y1'
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          interaction: { mode: 'index', intersect: false },
-          scales: {
-            y: {
-              beginAtZero: true,
-              position: 'left',
-              title: { display: true, text: 'Ganancia neta (COP)' }
-            },
-            y1: {
-              beginAtZero: true,
-              position: 'right',
-              grid: { drawOnChartArea: false },
-              title: { display: true, text: 'Margen (%)' }
-            }
-          }
+          labels: ['Clásica', 'Premium'],
+          datasets: [{
+            label: 'Precio de publicación',
+            data: [precioClasica, precioPremium],
+            backgroundColor: ['#4CAF50', '#FF9800']
+          }]
         }
       });
     }
