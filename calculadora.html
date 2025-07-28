@@ -153,65 +153,70 @@
 
   <hr style="margin:40px 0;">
 
-  <!-- SEGUNDA CALCULADORA -->
+  <!-- SEGUNDA CALCULADORA: AL REVÉS -->
 <div class="container">
-  <h2>Calculadora rápida por precio</h2>
-  <p>Ingresa los datos y calcula utilidad sin gráficos.</p>
+  <h2>Calculadora para definir precio de venta</h2>
+  <p>Ingresa el valor que quieres ganar libre y tu costo. Calcularemos el precio que debes publicar en ML.</p>
 
-  <label for="categoria2">Categoría:</label>
-  <select id="categoria2">
+  <label for="categoria3">Categoría:</label>
+  <select id="categoria3">
     <option value="General/Electrónica">General/Electrónica (13% / 17%)</option>
     <option value="Hogar/Moda">Hogar/Moda (14% / 18%)</option>
     <option value="Belleza/Salud">Belleza/Salud (15% / 19%)</option>
     <option value="Deportes/Juguetes">Deportes/Juguetes (16% / 20%)</option>
   </select>
 
-  <label for="precioVenta2">Pon tu precio de venta:</label>
-  <input type="number" id="precioVenta2" placeholder="Ej: 89000">
+  <label for="precioCompra3">Pon tu costo de compra:</label>
+  <input type="number" id="precioCompra3" placeholder="Ej: 30000">
 
-  <label for="precioCompra2">Pon tu precio de compra:</label>
-  <input type="number" id="precioCompra2" placeholder="Ej: 30000">
+  <label for="gananciaDeseada">Pon la ganancia que quieres tener (COP):</label>
+  <input type="number" id="gananciaDeseada" placeholder="Ej: 20000">
 
   <label>
-    <input type="checkbox" id="envio2" checked />
+    <input type="checkbox" id="envio3" checked />
     Ofrezco envío gratis
   </label>
 
-  <button onclick="calcularRapido()">Calcular</button>
+  <button onclick="calcularPrecioNecesario()">Calcular precio de publicación</button>
 
-  <div id="resultadoRapido" style="margin-top:20px; padding:15px; background:#f9f9f9; border-radius:8px;"></div>
+  <div id="resultadoPrecio" style="margin-top:20px; padding:15px; background:#f9f9f9; border-radius:8px;"></div>
 </div>
 
 <script>
-  function calcularRapido() {
-    const categoria = document.getElementById('categoria2').value;
-    const venta = parseFloat(document.getElementById('precioVenta2').value);
-    const compra = parseFloat(document.getElementById('precioCompra2').value);
-    const envioGratis = document.getElementById('envio2').checked;
-    const resultadoDiv = document.getElementById('resultadoRapido');
+  function calcularPrecioNecesario() {
+    const categoria = document.getElementById('categoria3').value;
+    const compra = parseFloat(document.getElementById('precioCompra3').value);
+    const gananciaDeseada = parseFloat(document.getElementById('gananciaDeseada').value);
+    const envioGratis = document.getElementById('envio3').checked;
+    const resultadoDiv = document.getElementById('resultadoPrecio');
 
-    if (isNaN(venta) || isNaN(compra)) {
+    if (isNaN(compra) || isNaN(gananciaDeseada)) {
       resultadoDiv.innerHTML = "<b>Por favor ingresa todos los valores.</b>";
       return;
     }
 
-    const aplicaCargo = venta < 60000;
-    const cargo = aplicaCargo ? CARGO_FIJO : 0;
     const envio = envioGratis ? COSTO_ENVIO : 0;
 
-    let html = `<h3>Resultados rápidos (${categoria})</h3>`;
+    let html = `<h3>Precios sugeridos para lograr una ganancia de $${gananciaDeseada.toLocaleString()}</h3>`;
 
     for (const tipo in comisiones[categoria]) {
       const pct = comisiones[categoria][tipo];
-      const comision = venta * pct;
-      const ganancia = venta - comision - cargo - envio - compra;
-      const margen = (ganancia / venta) * 100;
+
+      // Aquí debemos considerar el cargo fijo:
+      // 1. Primero calculamos sin cargo para obtener un precio aproximado
+      let precioEstimado = (gananciaDeseada + compra + envio) / (1 - pct);
+
+      // Si con ese precio sigue siendo menor a 60000, hay que sumar el cargo fijo
+      const aplicaCargo = precioEstimado < 60000;
+      const cargo = aplicaCargo ? CARGO_FIJO : 0;
+
+      // Precio final ajustado
+      const precioFinal = (gananciaDeseada + compra + envio + cargo) / (1 - pct);
 
       html += `
         <p><b>${tipo}</b><br>
            Comisión: ${(pct * 100).toFixed(1)}%<br>
-           Ganancia neta: $${ganancia.toLocaleString()}<br>
-           Margen: ${margen.toFixed(2)}%</p>
+           Precio mínimo sugerido: $${precioFinal.toLocaleString()} ${aplicaCargo ? "(incluye cargo fijo)" : ""}</p>
       `;
     }
 
