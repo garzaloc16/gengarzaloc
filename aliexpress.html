@@ -84,7 +84,25 @@
       <input type="number" id="valorImpuestos" value="0" />
     </div>
 
-    <label><input type="checkbox" id="cubrirEnvio" /> ¿Cubrir el envío en Mercado Libre?</label>
+    <label for="categoria">Categoría del producto</label>
+    <select id="categoria">
+      <option value="otros">Otros</option>
+      <option value="electronica">Electrónica</option>
+      <option value="juguetes">Juguetes</option>
+      <option value="ropa">Ropa / Moda</option>
+    </select>
+
+    <label><input type="checkbox" id="cubrirEnvio" onchange="togglePesoEnvio()" /> ¿Cubrir el envío en Mercado Libre?</label>
+
+    <div id="campoPeso" style="display:none;">
+      <label for="pesoEnvio">Selecciona el rango de peso del producto:</label>
+      <select id="pesoEnvio">
+        <option value="5900">Liviano (0-500g) - $5.900</option>
+        <option value="8900">Mediano (0.5-2kg) - $8.900</option>
+        <option value="13900">Pesado (2-5kg) - $13.900</option>
+        <option value="18900">Muy pesado (+5kg) - $18.900</option>
+      </select>
+    </div>
 
     <label for="precioPersonalizado">¿Quieres ingresar tu precio de venta en MercadoLibre? (Opcional)</label>
     <input type="number" id="precioPersonalizado" />
@@ -101,6 +119,25 @@
       document.getElementById('campoImpuestos').style.display = impuestos === 'si' ? 'block' : 'none';
     }
 
+    function togglePesoEnvio() {
+      const cubrir = document.getElementById('cubrirEnvio').checked;
+      document.getElementById('campoPeso').style.display = cubrir ? 'block' : 'none';
+    }
+
+    function obtenerComisiones() {
+      const categoria = document.getElementById('categoria').value;
+      switch (categoria) {
+        case 'electronica':
+          return { clasica: 0.16, premium: 0.20 };
+        case 'juguetes':
+          return { clasica: 0.13, premium: 0.17 };
+        case 'ropa':
+          return { clasica: 0.14, premium: 0.18 };
+        default:
+          return { clasica: 0.13, premium: 0.17 };
+      }
+    }
+
     function calcular() {
       const unidades = parseFloat(document.getElementById('unidades').value);
       const costoUnidad = parseFloat(document.getElementById('costoUnidad').value);
@@ -109,32 +146,32 @@
       const valorImpuestos = impuestosSeleccion ? parseFloat(document.getElementById('valorImpuestos').value) : 0;
       const cubrirEnvio = document.getElementById('cubrirEnvio').checked;
       const precioPersonalizado = parseFloat(document.getElementById('precioPersonalizado').value);
+      const costoEnvioML = cubrirEnvio ? parseFloat(document.getElementById('pesoEnvio').value) : 0;
 
-      const comisionClasica = 0.13;
-      const comisionPremium = 0.17;
-      const envioML = 5900;
+      const { clasica: comisionClasica, premium: comisionPremium } = obtenerComisiones();
 
       let costoTotal = (unidades * costoUnidad) + envio + valorImpuestos;
       const costoUnitario = costoTotal / unidades;
 
-      // Se agrega el 50% de rentabilidad en el precio sugerido
-      const base = costoUnitario + (cubrirEnvio ? envioML : 0);
+      const base = costoUnitario + costoEnvioML;
       let sugeridoClasica = (base * 1.5) / (1 - comisionClasica);
       let sugeridoPremium = (base * 1.5) / (1 - comisionPremium);
+
+      const rentabilidadSug = 50;
 
       let html = `
         <h2>Resultados</h2>
         <p><strong>Costo unitario total:</strong> ${costoUnitario.toFixed(2)} COP</p>
-        <p><strong>Precio sugerido (Clásica):</strong> ${sugeridoClasica.toFixed(2)} COP</p>
-        <p><strong>Precio sugerido (Premium):</strong> ${sugeridoPremium.toFixed(2)} COP</p>
+        <p><strong>Precio sugerido (Clásica):</strong> ${sugeridoClasica.toFixed(2)} COP (Rentabilidad: ${rentabilidadSug}%)</p>
+        <p><strong>Precio sugerido (Premium):</strong> ${sugeridoPremium.toFixed(2)} COP (Rentabilidad: ${rentabilidadSug}%)</p>
       `;
 
       if (!isNaN(precioPersonalizado)) {
-        const netoClasica = precioPersonalizado * (1 - comisionClasica) - (cubrirEnvio ? envioML : 0);
+        const netoClasica = precioPersonalizado * (1 - comisionClasica) - costoEnvioML;
         const gananciaClasica = netoClasica - costoUnitario;
         const rentabilidadClasica = (gananciaClasica / costoUnitario) * 100;
 
-        const netoPremium = precioPersonalizado * (1 - comisionPremium) - (cubrirEnvio ? envioML : 0);
+        const netoPremium = precioPersonalizado * (1 - comisionPremium) - costoEnvioML;
         const gananciaPremium = netoPremium - costoUnitario;
         const rentabilidadPremium = (gananciaPremium / costoUnitario) * 100;
 
