@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Aliexpress - Cálculo de Rentabilidad</title>
+  <title>Airexpress - Cálculo de Rentabilidad</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -76,7 +76,7 @@
 <body>
   <header>
     <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Aliexpress_logo.png" alt="AliExpress">
-    <h1>Aliexpress - Cálculo de Rentabilidad</h1>
+    <h1>Airexpress - Cálculo de Rentabilidad</h1>
   </header>
   <main>
     <label>Unidades a Comprar</label>
@@ -133,10 +133,9 @@
       const costoUnitario = costoTotal / unidades;
       const margen = 0.60;
 
-      // Costos ML
       const comisionClasica = 0.13;
       const comisionPremium = 0.17;
-      const envioML = cubrirEnvio ? 0 : 0; // si decides incluir cálculo de envío propio aquí lo ajustas
+      const envioML = cubrirEnvio ? 0 : 0;
 
       function precioSugerido(comision) {
         return (costoUnitario + envioML) / (1 - comision - margen);
@@ -162,8 +161,8 @@
         const gPremium = calcGanancia(precioManual, comisionPremium);
 
         html += `<h3>Análisis con tu precio ingresado:</h3>`;
-        html += `<p><strong>Publicación Clásica:</strong> Ganancia: ${gClasica.ganancia.toFixed(2)} COP, Rentabilidad: <span class="${gClasica.rentabilidad<60?'rojo':''}">${gClasica.rentabilidad.toFixed(2)}%</span></p>`;
-        html += `<p><strong>Publicación Premium:</strong> Ganancia: ${gPremium.ganancia.toFixed(2)} COP, Rentabilidad: <span class="${gPremium.rentabilidad<60?'rojo':''}">${gPremium.rentabilidad.toFixed(2)}%</span></p>`;
+        html += `<p><strong>Publicación Clásica:</strong> Ganancia: ${gClasica.ganancia.toFixed(2)} COP, Rentabilidad: <span class="${gClasica.rentabilidad<50?'rojo':''}">${gClasica.rentabilidad.toFixed(2)}%</span></p>`;
+        html += `<p><strong>Publicación Premium:</strong> Ganancia: ${gPremium.ganancia.toFixed(2)} COP, Rentabilidad: <span class="${gPremium.rentabilidad<50?'rojo':''}">${gPremium.rentabilidad.toFixed(2)}%</span></p>`;
       }
 
       document.getElementById('resultados').innerHTML = html;
