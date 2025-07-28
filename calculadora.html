@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Ganancias ML</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+      background: #f7f7f7;
+      color: #333;
+    }
+    h1 { text-align: center; }
+    label { display: block; margin-top: 15px; }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px;
+      width: 100%;
+      background: #007bff;
+      color: #fff;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .result { background: #fff; padding: 15px; margin-top: 20px; border-radius: 5px; }
+    canvas { margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Calculadora de Ganancia MercadoLibre</h1>
+
+  <label>Categoría:</label>
+  <select id="categoria">
+    <option value="General/Electrónica">General/Electrónica (13% / 17%)</option>
+    <option value="Hogar/Moda">Hogar/Moda (14% / 18%)</option>
+    <option value="Belleza/Salud">Belleza/Salud (15% / 19%)</option>
+    <option value="Deportes/Juguetes">Deportes/Juguetes (16% / 20%)</option>
+  </select>
+
+  <label>Costo de compra (COP):</label>
+  <input type="number" id="compra" />
+
+  <label>Precio de venta (COP):</label>
+  <input type="number" id="venta" />
+
+  <label>
+    <input type="checkbox" id="envio" checked />
+    Ofrezco envío gratis
+  </label>
+
+  <button onclick="calcular()">Calcular</button>
+
+  <div class="result" id="resultado"></div>
+
+  <canvas id="grafico" width="400" height="200"></canvas>
+
+  <!-- Chart.js desde CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script>
+    const comisiones = {
+      "General/Electrónica": { Clasica: 0.13, Premium: 0.17 },
+      "Hogar/Moda": { Clasica: 0.14, Premium: 0.18 },
+      "Belleza/Salud": { Clasica: 0.15, Premium: 0.19 },
+      "Deportes/Juguetes": { Clasica: 0.16, Premium: 0.20 },
+    };
+    const CARGO_FIJO = 3000;
+    const COSTO_ENVIO = 8000;
+    let chart = null;
+
+    function calcular() {
+      const categoria = document.getElementById("categoria").value;
+      const compra = parseFloat(document.getElementById("compra").value) || 0;
+      const venta = parseFloat(document.getElementById("venta").value) || 0;
+      const envioGratis = document.getElementById("envio").checked;
+
+      const aplicaCargo = venta < 60000;
+      const cargo = aplicaCargo ? CARGO_FIJO : 0;
+      const envio = envioGratis ? COSTO_ENVIO : 0;
+
+      const resultados = [];
+      for (const tipo in comisiones[categoria]) {
+        const pct = comisiones[categoria][tipo];
+        const comision = venta * pct;
+        const ganancia = venta - comision - cargo - envio - compra;
+        const margen = (ganancia / venta) * 100;
+        resultados.push({ tipo, pct: pct * 100, ganancia, margen });
+      }
+
+      // Mostrar resultados en texto
+      let html = "<h2>Resultados</h2>";
+      resultados.forEach(r => {
+        html += `<p><b>${r.tipo}</b><br>
+                 Comisión: ${r.pct.toFixed(1)}%<br>
+                 Ganancia neta: ${r.ganancia.toFixed(0)} COP<br>
+                 Margen: ${r.margen.toFixed(2)}%</p>`;
+      });
+      document.getElementById("resultado").innerHTML = html;
+
+      // Datos para gráfico
+      const labels = resultados.map(r => r.tipo);
+      const ganancias = resultados.map(r => r.ganancia.toFixed(0));
+      const margenes = resultados.map(r => r.margen.toFixed(2));
+
+      const ctx = document.getElementById('grafico').getContext('2d');
+      if (chart) chart.destroy();
+      chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Ganancia neta (COP)',
+              data: ganancias,
+              backgroundColor: 'rgba(75, 192, 192, 0.7)',
+              yAxisID: 'y'
+            },
+            {
+              label: 'Margen (%)',
+              data: margenes,
+              backgroundColor: 'rgba(255, 159, 64, 0.7)',
+              yAxisID: 'y1'
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          interaction: { mode: 'index', intersect: false },
+          scales: {
+            y: {
+              beginAtZero: true,
+              position: 'left',
+              title: { display: true, text: 'Ganancia neta (COP)' }
+            },
+            y1: {
+              beginAtZero: true,
+              position: 'right',
+              grid: { drawOnChartArea: false },
+              title: { display: true, text: 'Margen (%)' }
+            }
+          }
+        }
+      });
+    }
+  </script>
+</body>
+</html>
