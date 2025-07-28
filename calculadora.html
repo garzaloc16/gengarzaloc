@@ -150,5 +150,48 @@
       });
     }
   </script>
+  <hr style="margin:40px 0;">
+
+<div class="container">
+  <h2>Calculadora rápida por precio</h2>
+  <p>Ingresa tu precio de venta y tu precio de compra para calcular utilidad con comisiones.</p>
+
+  <label for="precioVenta2">Pon tu precio de venta:</label><br>
+  <input type="number" id="precioVenta2" placeholder="Ej: 89000"><br><br>
+
+  <label for="precioCompra2">Pon tu precio de compra:</label><br>
+  <input type="number" id="precioCompra2" placeholder="Ej: 30000"><br><br>
+
+  <button onclick="calcularRapido()">Calcular</button>
+
+  <div id="resultadoRapido" style="margin-top:20px; padding:15px; background:#f9f9f9; border-radius:8px;"></div>
+</div>
+
+<script>
+  function calcularRapido() {
+    const venta = parseFloat(document.getElementById('precioVenta2').value);
+    const compra = parseFloat(document.getElementById('precioCompra2').value);
+    const resultadoDiv = document.getElementById('resultadoRapido');
+
+    if (isNaN(venta) || isNaN(compra)) {
+      resultadoDiv.innerHTML = "<b>Por favor ingresa ambos valores.</b>";
+      return;
+    }
+
+    // Lógica igual a la que tienes en la calculadora original:
+    // Ejemplo: comisión MercadoLibre 13% + IVA (esto depende de tu calculadora original)
+    const comision = venta * 0.13;
+    const neto = venta - comision;
+    const ganancia = neto - compra;
+
+    resultadoDiv.innerHTML = `
+      <p><b>Precio de venta:</b> $${venta.toLocaleString()}</p>
+      <p><b>Precio de compra:</b> $${compra.toLocaleString()}</p>
+      <p><b>Comisión aprox.:</b> $${comision.toLocaleString()}</p>
+      <p><b>Neto que recibes:</b> $${neto.toLocaleString()}</p>
+      <p><b>Ganancia final:</b> $${ganancia.toLocaleString()}</p>
+    `;
+  }
+</script>
 </body>
 </html>
