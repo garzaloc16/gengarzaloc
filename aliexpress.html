@@ -1,184 +1,159 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8"/>
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Airexpress - Cálculo de Rentabilidad</title>
+  <title>Aliexpress - Cálculo de Rentabilidad</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
+      background: #f44336;
       margin: 0;
       padding: 0;
-      background-color: #FF4747;
       color: #333;
     }
-    header {
-      background-color: #fff;
-      padding: 10px 20px;
-      display: flex;
-      align-items: center;
-    }
-    header img {
-      height: 40px;
-      margin-right: 15px;
-    }
-    header h1 {
-      font-size: 1.5em;
-      margin: 0;
-    }
-    main {
-      padding: 20px;
+    .container {
       max-width: 800px;
       margin: auto;
-      background: #fff;
+      background: white;
+      padding: 20px;
+    }
+    h1 {
+      color: #c62828;
+      text-align: center;
     }
     label {
       display: block;
-      margin-top: 15px;
+      margin-top: 10px;
       font-weight: bold;
     }
-    input[type="number"], input[type="text"] {
+    input, select {
       width: 100%;
       padding: 8px;
       margin-top: 5px;
-      box-sizing: border-box;
     }
     button {
       margin-top: 20px;
-      padding: 10px;
-      background-color: #FF4747;
-      color: #fff;
+      background: #d32f2f;
+      color: white;
       border: none;
-      cursor: pointer;
+      padding: 10px 15px;
       font-size: 16px;
+      cursor: pointer;
       width: 100%;
-    }
-    button:hover {
-      background-color: #e63d3d;
     }
     .resultados {
       margin-top: 30px;
+      background: #f3f3f3;
       padding: 20px;
-      background: #f0f0f0;
-      border-radius: 8px;
+      border-radius: 5px;
     }
-    .rojo {
+    .resultados h2 {
+      color: #c62828;
+    }
+    .negativo {
       color: red;
-      font-weight: bold;
     }
-    canvas {
-      margin-top: 20px;
-      background: #fff;
-      border: 1px solid #ccc;
+    .positivo {
+      color: green;
     }
   </style>
 </head>
 <body>
-  <header>
-    <img src="https://upload.wikimedia.org/wikipedia/commons/2/2f/Aliexpress_logo.png" alt="AliExpress">
-    <h1>Airexpress - Cálculo de Rentabilidad</h1>
-  </header>
-  <main>
-    <label>Unidades a Comprar</label>
-    <input type="number" id="unidades" min="1">
+  <div class="container">
+    <h1>Aliexpress - Cálculo de Rentabilidad</h1>
 
-    <label>Valor unidad (COP)</label>
-    <input type="number" id="valorUnidad" min="0">
+    <label for="unidades">Unidades a Comprar</label>
+    <input type="number" id="unidades" />
 
-    <label>Valor del envío (COP) (Si es gratis deja 0)</label>
-    <input type="number" id="envio" min="0">
+    <label for="costoUnidad">Valor unidad (COP)</label>
+    <input type="number" id="costoUnidad" />
 
-    <label>¿Cobraron impuestos?</label>
-    <select id="impuestosSelect">
+    <label for="envio">Valor del envío (COP) (Si es gratis deja 0)</label>
+    <input type="number" id="envio" />
+
+    <label for="impuestos">¿Cobran impuestos?</label>
+    <select id="impuestos">
       <option value="no">No</option>
       <option value="si">Sí</option>
     </select>
 
-    <div id="impuestosExtra" style="display:none;">
-      <label>Valor impuestos (COP)</label>
-      <input type="number" id="impuestos" min="0">
-    </div>
+    <label><input type="checkbox" id="cubrirEnvio" /> ¿Cubrir el envío en Mercado Libre?</label>
 
-    <label>
-      <input type="checkbox" id="cubrirEnvio"> ¿Cubrir el envío en Mercado Libre?
-    </label>
-
-    <label>¿Quieres ingresar tu precio de venta en MercadoLibre? (Opcional)</label>
-    <input type="number" id="precioManual" placeholder="Ingresa tu precio">
+    <label for="precioPersonalizado">¿Quieres ingresar tu precio de venta en MercadoLibre? (Opcional)</label>
+    <input type="number" id="precioPersonalizado" />
 
     <button onclick="calcular()">Calcular</button>
 
     <div class="resultados" id="resultados"></div>
+    <canvas id="grafico" height="150"></canvas>
+  </div>
 
-    <canvas id="grafico" width="600" height="300"></canvas>
-  </main>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
-    document.getElementById('impuestosSelect').addEventListener('change', function() {
-      document.getElementById('impuestosExtra').style.display =
-        this.value === 'si' ? 'block' : 'none';
-    });
-
     function calcular() {
-      const unidades = parseFloat(document.getElementById('unidades').value) || 0;
-      const valorUnidad = parseFloat(document.getElementById('valorUnidad').value) || 0;
-      const envio = parseFloat(document.getElementById('envio').value) || 0;
-      const impuestos = document.getElementById('impuestosSelect').value === 'si'
-        ? (parseFloat(document.getElementById('impuestos').value) || 0) : 0;
+      const unidades = parseFloat(document.getElementById('unidades').value);
+      const costoUnidad = parseFloat(document.getElementById('costoUnidad').value);
+      const envio = parseFloat(document.getElementById('envio').value);
+      const impuestos = document.getElementById('impuestos').value === 'si';
       const cubrirEnvio = document.getElementById('cubrirEnvio').checked;
-      const precioManual = parseFloat(document.getElementById('precioManual').value) || 0;
-
-      const costoTotal = (valorUnidad * unidades) + envio + impuestos;
-      const costoUnitario = costoTotal / unidades;
-      const margen = 0.60;
+      const precioPersonalizado = parseFloat(document.getElementById('precioPersonalizado').value);
 
       const comisionClasica = 0.13;
       const comisionPremium = 0.17;
-      const envioML = cubrirEnvio ? 0 : 0;
+      const envioML = 5900;
 
-      function precioSugerido(comision) {
-        return (costoUnitario + envioML) / (1 - comision - margen);
-      }
+      let costoTotal = (unidades * costoUnidad) + envio;
+      if (impuestos) costoTotal *= 1.19;
 
-      const precioClasica = precioSugerido(comisionClasica);
-      const precioPremium = precioSugerido(comisionPremium);
+      const costoUnitario = costoTotal / unidades;
 
-      let html = `<h2>Resultados</h2>`;
-      html += `<p>Costo unitario total: ${costoUnitario.toFixed(2)} COP</p>`;
-      html += `<p>Precio sugerido (Clásica): ${precioClasica.toFixed(2)} COP</p>`;
-      html += `<p>Precio sugerido (Premium): ${precioPremium.toFixed(2)} COP</p>`;
+      let sugeridoClasica = (costoUnitario + (cubrirEnvio ? envioML : 0)) / (1 - comisionClasica);
+      let sugeridoPremium = (costoUnitario + (cubrirEnvio ? envioML : 0)) / (1 - comisionPremium);
 
-      if (precioManual > 0) {
-        function calcGanancia(precio, comision) {
-          const neto = precio - (precio * comision);
-          const ganancia = neto - costoUnitario - (cubrirEnvio ? envio : 0);
-          const rentabilidad = (ganancia / costoUnitario) * 100;
-          return {ganancia, rentabilidad};
-        }
+      let html = `
+        <h2>Resultados</h2>
+        <p><strong>Costo unitario total:</strong> ${costoUnitario.toFixed(2)} COP</p>
+        <p><strong>Precio sugerido (Clásica):</strong> ${sugeridoClasica.toFixed(2)} COP</p>
+        <p><strong>Precio sugerido (Premium):</strong> ${sugeridoPremium.toFixed(2)} COP</p>
+      `;
 
-        const gClasica = calcGanancia(precioManual, comisionClasica);
-        const gPremium = calcGanancia(precioManual, comisionPremium);
+      if (!isNaN(precioPersonalizado)) {
+        const netoClasica = precioPersonalizado * (1 - comisionClasica) - (cubrirEnvio ? envioML : 0);
+        const gananciaClasica = netoClasica - costoUnitario;
+        const rentabilidadClasica = (gananciaClasica / costoUnitario) * 100;
 
-        html += `<h3>Análisis con tu precio ingresado:</h3>`;
-        html += `<p><strong>Publicación Clásica:</strong> Ganancia: ${gClasica.ganancia.toFixed(2)} COP, Rentabilidad: <span class="${gClasica.rentabilidad<50?'rojo':''}">${gClasica.rentabilidad.toFixed(2)}%</span></p>`;
-        html += `<p><strong>Publicación Premium:</strong> Ganancia: ${gPremium.ganancia.toFixed(2)} COP, Rentabilidad: <span class="${gPremium.rentabilidad<50?'rojo':''}">${gPremium.rentabilidad.toFixed(2)}%</span></p>`;
+        const netoPremium = precioPersonalizado * (1 - comisionPremium) - (cubrirEnvio ? envioML : 0);
+        const gananciaPremium = netoPremium - costoUnitario;
+        const rentabilidadPremium = (gananciaPremium / costoUnitario) * 100;
+
+        html += `
+          <h3>Análisis con tu precio ingresado:</h3>
+          <p>Publicación Clásica: Ganancia: ${gananciaClasica.toFixed(2)} COP, Rentabilidad: <span class="${rentabilidadClasica < 50 ? 'negativo' : 'positivo'}">${rentabilidadClasica.toFixed(2)}%</span></p>
+          <p>Publicación Premium: Ganancia: ${gananciaPremium.toFixed(2)} COP, Rentabilidad: <span class="${rentabilidadPremium < 50 ? 'negativo' : 'positivo'}">${rentabilidadPremium.toFixed(2)}%</span></p>
+        `;
       }
 
       document.getElementById('resultados').innerHTML = html;
 
       const ctx = document.getElementById('grafico').getContext('2d');
-      new Chart(ctx, {
+      if (window.miGrafico) window.miGrafico.destroy();
+      window.miGrafico = new Chart(ctx, {
         type: 'bar',
         data: {
           labels: ['Precio sugerido Clásica', 'Precio sugerido Premium'],
           datasets: [{
             label: 'COP',
-            data: [precioClasica, precioPremium],
+            data: [sugeridoClasica, sugeridoPremium],
             backgroundColor: ['green', 'blue']
           }]
         },
-        options: {responsive: false}
+        options: {
+          responsive: true,
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
       });
     }
   </script>
