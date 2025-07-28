@@ -108,8 +108,10 @@
 
       const costoUnitario = costoTotal / unidades;
 
-      let sugeridoClasica = (costoUnitario + (cubrirEnvio ? envioML : 0)) / (1 - comisionClasica);
-      let sugeridoPremium = (costoUnitario + (cubrirEnvio ? envioML : 0)) / (1 - comisionPremium);
+      // Se agrega el 50% de rentabilidad en el precio sugerido
+      const base = costoUnitario + (cubrirEnvio ? envioML : 0);
+      let sugeridoClasica = (base * 1.5) / (1 - comisionClasica);
+      let sugeridoPremium = (base * 1.5) / (1 - comisionPremium);
 
       let html = `
         <h2>Resultados</h2>
