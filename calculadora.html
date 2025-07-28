@@ -150,17 +150,32 @@
       });
     }
   </script>
+
   <hr style="margin:40px 0;">
 
+  <!-- SEGUNDA CALCULADORA -->
 <div class="container">
   <h2>Calculadora rápida por precio</h2>
-  <p>Ingresa tu precio de venta y tu precio de compra para calcular utilidad con comisiones.</p>
+  <p>Ingresa los datos y calcula utilidad sin gráficos.</p>
 
-  <label for="precioVenta2">Pon tu precio de venta:</label><br>
-  <input type="number" id="precioVenta2" placeholder="Ej: 89000"><br><br>
+  <label for="categoria2">Categoría:</label>
+  <select id="categoria2">
+    <option value="General/Electrónica">General/Electrónica (13% / 17%)</option>
+    <option value="Hogar/Moda">Hogar/Moda (14% / 18%)</option>
+    <option value="Belleza/Salud">Belleza/Salud (15% / 19%)</option>
+    <option value="Deportes/Juguetes">Deportes/Juguetes (16% / 20%)</option>
+  </select>
 
-  <label for="precioCompra2">Pon tu precio de compra:</label><br>
-  <input type="number" id="precioCompra2" placeholder="Ej: 30000"><br><br>
+  <label for="precioVenta2">Pon tu precio de venta:</label>
+  <input type="number" id="precioVenta2" placeholder="Ej: 89000">
+
+  <label for="precioCompra2">Pon tu precio de compra:</label>
+  <input type="number" id="precioCompra2" placeholder="Ej: 30000">
+
+  <label>
+    <input type="checkbox" id="envio2" checked />
+    Ofrezco envío gratis
+  </label>
 
   <button onclick="calcularRapido()">Calcular</button>
 
@@ -169,28 +184,38 @@
 
 <script>
   function calcularRapido() {
+    const categoria = document.getElementById('categoria2').value;
     const venta = parseFloat(document.getElementById('precioVenta2').value);
     const compra = parseFloat(document.getElementById('precioCompra2').value);
+    const envioGratis = document.getElementById('envio2').checked;
     const resultadoDiv = document.getElementById('resultadoRapido');
 
     if (isNaN(venta) || isNaN(compra)) {
-      resultadoDiv.innerHTML = "<b>Por favor ingresa ambos valores.</b>";
+      resultadoDiv.innerHTML = "<b>Por favor ingresa todos los valores.</b>";
       return;
     }
 
-    // Lógica igual a la que tienes en la calculadora original:
-    // Ejemplo: comisión MercadoLibre 13% + IVA (esto depende de tu calculadora original)
-    const comision = venta * 0.13;
-    const neto = venta - comision;
-    const ganancia = neto - compra;
+    const aplicaCargo = venta < 60000;
+    const cargo = aplicaCargo ? CARGO_FIJO : 0;
+    const envio = envioGratis ? COSTO_ENVIO : 0;
 
-    resultadoDiv.innerHTML = `
-      <p><b>Precio de venta:</b> $${venta.toLocaleString()}</p>
-      <p><b>Precio de compra:</b> $${compra.toLocaleString()}</p>
-      <p><b>Comisión aprox.:</b> $${comision.toLocaleString()}</p>
-      <p><b>Neto que recibes:</b> $${neto.toLocaleString()}</p>
-      <p><b>Ganancia final:</b> $${ganancia.toLocaleString()}</p>
-    `;
+    let html = `<h3>Resultados rápidos (${categoria})</h3>`;
+
+    for (const tipo in comisiones[categoria]) {
+      const pct = comisiones[categoria][tipo];
+      const comision = venta * pct;
+      const ganancia = venta - comision - cargo - envio - compra;
+      const margen = (ganancia / venta) * 100;
+
+      html += `
+        <p><b>${tipo}</b><br>
+           Comisión: ${(pct * 100).toFixed(1)}%<br>
+           Ganancia neta: $${ganancia.toLocaleString()}<br>
+           Margen: ${margen.toFixed(2)}%</p>
+      `;
+    }
+
+    resultadoDiv.innerHTML = html;
   }
 </script>
 </body>
