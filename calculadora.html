@@ -7,11 +7,32 @@
   <style>
     body {
       font-family: Arial, sans-serif;
-      max-width: 600px;
+      margin: 0;
+      padding: 0;
+      background: #FFF159; /* Fondo amarillo MercadoLibre */
+      color: #333;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      padding: 20px;
+      background: #FFF159;
+    }
+    .header img {
+      height: 50px;
+      margin-right: 20px;
+    }
+    .content {
+      max-width: 800px;
       margin: 20px auto;
       padding: 20px;
-      background: #f7f7f7;
-      color: #333;
+    }
+    .card {
+      background: #fff;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
     }
     h1 { text-align: center; }
     label { display: block; margin-top: 15px; }
@@ -29,40 +50,68 @@
       border: none;
       cursor: pointer;
       font-size: 16px;
+      border-radius: 6px;
     }
     .result { background: #fff; padding: 15px; margin-top: 20px; border-radius: 5px; }
     canvas { margin-top: 20px; }
   </style>
 </head>
 <body>
-  <h1>Calculadora de Ganancia MercadoLibre</h1>
+  <!-- Encabezado con logo -->
+  <div class="header">
+    <img src="https://http2.mlstatic.com/frontend-assets/ml-web-navigation/ui-navigation/5.21.2/mercadolibre/logo__large_plus.png" alt="MercadoLibre">
+    <h2>Calculadoras de Ganancia MercadoLibre</h2>
+  </div>
 
-  <label>Categoría:</label>
-  <select id="categoria">
-    <option value="General/Electrónica">General/Electrónica (13% / 17%)</option>
-    <option value="Hogar/Moda">Hogar/Moda (14% / 18%)</option>
-    <option value="Belleza/Salud">Belleza/Salud (15% / 19%)</option>
-    <option value="Deportes/Juguetes">Deportes/Juguetes (16% / 20%)</option>
-  </select>
+  <div class="content">
+    <!-- Primera calculadora -->
+    <div class="card">
+      <h1>Calculadora de Ganancia MercadoLibre</h1>
 
-  <label>Costo de compra (COP):</label>
-  <input type="number" id="compra" />
+      <label>Categoría:</label>
+      <select id="categoria">
+        <option value="General/Electrónica">General/Electrónica (13% / 17%)</option>
+        <option value="Hogar/Moda">Hogar/Moda (14% / 18%)</option>
+        <option value="Belleza/Salud">Belleza/Salud (15% / 19%)</option>
+        <option value="Deportes/Juguetes">Deportes/Juguetes (16% / 20%)</option>
+      </select>
 
-  <label>Precio de venta (COP):</label>
-  <input type="number" id="venta" />
+      <label>Costo de compra (COP):</label>
+      <input type="number" id="compra" />
 
-  <label>
-    <input type="checkbox" id="envio" checked />
-    Ofrezco envío gratis
-  </label>
+      <label>Precio de venta (COP):</label>
+      <input type="number" id="venta" />
 
-  <button onclick="calcular()">Calcular</button>
+      <label>
+        <input type="checkbox" id="envio" checked />
+        Ofrezco envío gratis
+      </label>
 
-  <div class="result" id="resultado"></div>
+      <button onclick="calcular()">Calcular</button>
 
-  <canvas id="grafico" width="400" height="200"></canvas>
+      <div class="result" id="resultado"></div>
 
-  <!-- Chart.js desde CDN -->
+      <canvas id="grafico" width="400" height="200"></canvas>
+    </div>
+
+    <!-- Segunda calculadora -->
+    <div class="card">
+      <h2>Calculadora rápida por precio</h2>
+      <p>Ingresa cuánto quieres recibir libre (neto) y el costo de compra para saber en cuánto publicar:</p>
+
+      <label for="gananciaDeseada">¿Cuánto quieres recibir libre (COP)?</label><br>
+      <input type="number" id="gananciaDeseada" placeholder="Ej: 50000"><br><br>
+
+      <label for="precioCompra2">Costo de compra (COP):</label><br>
+      <input type="number" id="precioCompra2" placeholder="Ej: 30000"><br><br>
+
+      <button onclick="calcularRapido()">Calcular</button>
+
+      <div id="resultadoRapido" style="margin-top:20px; padding:15px; background:#f9f9f9; border-radius:8px;"></div>
+    </div>
+  </div>
+
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script>
     const comisiones = {
@@ -94,7 +143,6 @@
         resultados.push({ tipo, pct: pct * 100, ganancia, margen });
       }
 
-      // Mostrar resultados en texto
       let html = "<h2>Resultados</h2>";
       resultados.forEach(r => {
         html += `<p><b>${r.tipo}</b><br>
@@ -104,7 +152,6 @@
       });
       document.getElementById("resultado").innerHTML = html;
 
-      // Datos para gráfico
       const labels = resultados.map(r => r.tipo);
       const ganancias = resultados.map(r => r.ganancia.toFixed(0));
       const margenes = resultados.map(r => r.margen.toFixed(2));
@@ -149,79 +196,41 @@
         }
       });
     }
+
+    function calcularRapido() {
+      const libre = parseFloat(document.getElementById('gananciaDeseada').value);
+      const compra = parseFloat(document.getElementById('precioCompra2').value);
+      const resultadoDiv = document.getElementById('resultadoRapido');
+
+      if (isNaN(libre) || isNaN(compra)) {
+        resultadoDiv.innerHTML = "<b>Por favor ingresa ambos valores.</b>";
+        return;
+      }
+
+      const envio = 8000;
+      const cargoFijo = 3000;
+      const categorias = {
+        "General/Electrónica": { Clasica: 0.13, Premium: 0.17 },
+        "Hogar/Moda": { Clasica: 0.14, Premium: 0.18 },
+        "Belleza/Salud": { Clasica: 0.15, Premium: 0.19 },
+        "Deportes/Juguetes": { Clasica: 0.16, Premium: 0.20 },
+      };
+
+      let html = "<h3>Precios sugeridos</h3>";
+
+      for (const categoria in categorias) {
+        html += `<h4>${categoria}</h4>`;
+        for (const tipo in categorias[categoria]) {
+          const pct = categorias[categoria][tipo];
+          let venta = libre + compra + envio + cargoFijo;
+          venta = venta / (1 - pct);
+
+          html += `<p><b>${tipo}</b>: Publica en <b>$${venta.toFixed(0)}</b></p>`;
+        }
+      }
+
+      resultadoDiv.innerHTML = html;
+    }
   </script>
-
-  <hr style="margin:40px 0;">
-
-  <!-- SEGUNDA CALCULADORA: AL REVÉS -->
-<div class="container">
-  <h2>Calculadora para definir precio de venta</h2>
-  <p>Ingresa el valor que quieres ganar libre y tu costo. Calcularemos el precio que debes publicar en ML.</p>
-
-  <label for="categoria3">Categoría:</label>
-  <select id="categoria3">
-    <option value="General/Electrónica">General/Electrónica (13% / 17%)</option>
-    <option value="Hogar/Moda">Hogar/Moda (14% / 18%)</option>
-    <option value="Belleza/Salud">Belleza/Salud (15% / 19%)</option>
-    <option value="Deportes/Juguetes">Deportes/Juguetes (16% / 20%)</option>
-  </select>
-
-  <label for="precioCompra3">Pon tu costo de compra:</label>
-  <input type="number" id="precioCompra3" placeholder="Ej: 30000">
-
-  <label for="gananciaDeseada">Pon la ganancia que quieres tener (COP):</label>
-  <input type="number" id="gananciaDeseada" placeholder="Ej: 20000">
-
-  <label>
-    <input type="checkbox" id="envio3" checked />
-    Ofrezco envío gratis
-  </label>
-
-  <button onclick="calcularPrecioNecesario()">Calcular precio de publicación</button>
-
-  <div id="resultadoPrecio" style="margin-top:20px; padding:15px; background:#f9f9f9; border-radius:8px;"></div>
-</div>
-
-<script>
-  function calcularPrecioNecesario() {
-    const categoria = document.getElementById('categoria3').value;
-    const compra = parseFloat(document.getElementById('precioCompra3').value);
-    const gananciaDeseada = parseFloat(document.getElementById('gananciaDeseada').value);
-    const envioGratis = document.getElementById('envio3').checked;
-    const resultadoDiv = document.getElementById('resultadoPrecio');
-
-    if (isNaN(compra) || isNaN(gananciaDeseada)) {
-      resultadoDiv.innerHTML = "<b>Por favor ingresa todos los valores.</b>";
-      return;
-    }
-
-    const envio = envioGratis ? COSTO_ENVIO : 0;
-
-    let html = `<h3>Precios sugeridos para lograr una ganancia de $${gananciaDeseada.toLocaleString()}</h3>`;
-
-    for (const tipo in comisiones[categoria]) {
-      const pct = comisiones[categoria][tipo];
-
-      // Aquí debemos considerar el cargo fijo:
-      // 1. Primero calculamos sin cargo para obtener un precio aproximado
-      let precioEstimado = (gananciaDeseada + compra + envio) / (1 - pct);
-
-      // Si con ese precio sigue siendo menor a 60000, hay que sumar el cargo fijo
-      const aplicaCargo = precioEstimado < 60000;
-      const cargo = aplicaCargo ? CARGO_FIJO : 0;
-
-      // Precio final ajustado
-      const precioFinal = (gananciaDeseada + compra + envio + cargo) / (1 - pct);
-
-      html += `
-        <p><b>${tipo}</b><br>
-           Comisión: ${(pct * 100).toFixed(1)}%<br>
-           Precio mínimo sugerido: $${precioFinal.toLocaleString()} ${aplicaCargo ? "(incluye cargo fijo)" : ""}</p>
-      `;
-    }
-
-    resultadoDiv.innerHTML = html;
-  }
-</script>
 </body>
 </html>
