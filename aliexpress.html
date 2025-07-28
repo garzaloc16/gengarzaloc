@@ -1,207 +1,164 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Airexpress - Cálculo de Rentabilidad</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #FF4747;
-      color: #333;
-    }
-    header {
-      background-color: #fff;
-      padding: 10px 20px;
-      display: flex;
-      align-items: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    header img {
-      height: 40px;
-      margin-right: 10px;
-    }
-    .container {
-      max-width: 800px;
-      background: #fff;
-      margin: 20px auto;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-    }
-    h1, h2 {
-      text-align: center;
-    }
-    label {
-      display: block;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-    input, select {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-      box-sizing: border-box;
-    }
-    button {
-      margin-top: 20px;
-      padding: 12px;
-      width: 100%;
-      background: #FF4747;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: bold;
-    }
-    button:hover {
-      background: #e53e3e;
-    }
-    .result {
-      background: #f9f9f9;
-      padding: 15px;
-      margin-top: 20px;
-      border-radius: 5px;
-    }
-    .red { color: red; font-weight: bold; }
-    canvas { margin-top: 20px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aliexpress - Cálculo de Rentabilidad</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #FF4747;
+            color: #333;
+        }
+        header {
+            background-color: #fff;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        header img {
+            height: 40px;
+        }
+        main {
+            padding: 20px;
+        }
+        input, select, button {
+            display: block;
+            margin-bottom: 15px;
+            padding: 10px;
+            width: 100%;
+            max-width: 400px;
+        }
+        button {
+            background-color: #D42C20;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        .resultados {
+            background-color: #fff;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 8px;
+        }
+        .rentabilidad-roja {
+            color: red;
+            font-weight: bold;
+        }
+        canvas {
+            max-width: 600px;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <img src="https://upload.wikimedia.org/wikipedia/commons/0/0e/Aliexpress_logo.svg" alt="AliExpress">
-    <h2>Airexpress</h2>
-  </header>
-  <div class="container">
-    <h1>Calculadora de Rentabilidad Airexpress → MercadoLibre</h1>
-
-    <label>Unidades a comprar:</label>
+<header>
+    <h1>Airexpress</h1>
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/AliExpress_logo.svg/2560px-AliExpress_logo.svg.png" alt="AliExpress Logo">
+</header>
+<main>
+    <label>Unidades a Comprar</label>
     <input type="number" id="unidades" placeholder="Ej: 10">
 
-    <label>Valor por unidad (COP):</label>
-    <input type="number" id="valorUnidad" placeholder="Ej: 20000">
+    <label>Valor por Unidad (COP)</label>
+    <input type="number" id="valorUnidad" placeholder="Ej: 50000">
 
-    <label>Valor del envío (COP):</label>
-    <input type="number" id="valorEnvio" placeholder="Ej: 50000">
-    <label><input type="checkbox" id="envioGratisAli"> No aplica (Envío gratis)</label>
+    <label>Valor del Envío (COP)</label>
+    <input type="number" id="valorEnvio" placeholder="Ej: 20000">
+    <label><input type="checkbox" id="envioGratis"> Envío Gratis</label>
 
     <label>¿Cobraron impuestos?</label>
     <select id="impuestos">
-      <option value="no">No</option>
-      <option value="si">Sí</option>
+        <option value="no">No</option>
+        <option value="si">Sí</option>
     </select>
-    <div id="campoImpuestos" style="display:none;">
-      <label>Valor impuestos (COP):</label>
-      <input type="number" id="valorImpuestos" placeholder="Ej: 10000">
-    </div>
+    <input type="number" id="valorImpuestos" placeholder="Valor de los impuestos" style="display: none;">
 
-    <label>Categoría de venta (MercadoLibre):</label>
-    <select id="categoria">
-      <option value="General/Electrónica">General/Electrónica (13% / 17%)</option>
-      <option value="Hogar/Moda">Hogar/Moda (14% / 18%)</option>
-      <option value="Belleza/Salud">Belleza/Salud (15% / 19%)</option>
-      <option value="Deportes/Juguetes">Deportes/Juguetes (16% / 20%)</option>
+    <label>¿Cubres el envío en MercadoLibre?</label>
+    <select id="cubreEnvio">
+        <option value="no">No</option>
+        <option value="si">Sí</option>
     </select>
-
-    <label>
-      <input type="checkbox" id="envioGratisML" checked>
-      Ofrecer envío gratis en MercadoLibre
-    </label>
 
     <label>¿Quieres ingresar tu precio de venta en MercadoLibre? (Opcional)</label>
-    <input type="number" id="precioVentaML" placeholder="Ej: 150000">
+    <input type="number" id="precioManual" placeholder="Ej: 160000">
 
-    <button onclick="calcularAli()">Calcular</button>
+    <button onclick="calcular()">Calcular</button>
 
-    <div class="result" id="resultadoAli"></div>
-    <canvas id="graficoAli" width="400" height="200"></canvas>
-  </div>
-
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script>
-    const comisiones = {
-      "General/Electrónica": { Clasica: 0.13, Premium: 0.17 },
-      "Hogar/Moda": { Clasica: 0.14, Premium: 0.18 },
-      "Belleza/Salud": { Clasica: 0.15, Premium: 0.19 },
-      "Deportes/Juguetes": { Clasica: 0.16, Premium: 0.20 },
-    };
-    const CARGO_FIJO = 3000;
-    const COSTO_ENVIO = 8000;
-    let chartAli = null;
-
+    <div class="resultados" id="resultados"></div>
+    <canvas id="grafico"></canvas>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.getElementById("envioGratis").addEventListener("change", () => {
+        document.getElementById("valorEnvio").disabled = document.getElementById("envioGratis").checked;
+    });
     document.getElementById("impuestos").addEventListener("change", () => {
-      document.getElementById("campoImpuestos").style.display =
-        document.getElementById("impuestos").value === "si" ? "block" : "none";
+        document.getElementById("valorImpuestos").style.display = document.getElementById("impuestos").value === "si" ? "block" : "none";
     });
 
-    function calcularAli() {
-      const unidades = parseFloat(document.getElementById("unidades").value) || 0;
-      const valorUnidad = parseFloat(document.getElementById("valorUnidad").value) || 0;
-      const envioAli = document.getElementById("envioGratisAli").checked ? 0 : (parseFloat(document.getElementById("valorEnvio").value) || 0);
-      const impuestosSi = document.getElementById("impuestos").value === "si";
-      const valorImpuestos = impuestosSi ? (parseFloat(document.getElementById("valorImpuestos").value) || 0) : 0;
-      const categoria = document.getElementById("categoria").value;
-      const envioGratisML = document.getElementById("envioGratisML").checked;
-      const precioVentaML = parseFloat(document.getElementById("precioVentaML").value) || null;
+    function calcular() {
+        const unidades = parseFloat(document.getElementById("unidades").value);
+        const valorUnidad = parseFloat(document.getElementById("valorUnidad").value);
+        const envioGratis = document.getElementById("envioGratis").checked;
+        const valorEnvio = envioGratis ? 0 : parseFloat(document.getElementById("valorEnvio").value || 0);
+        const impuestos = document.getElementById("impuestos").value === "si" ? parseFloat(document.getElementById("valorImpuestos").value || 0) : 0;
+        const cubreEnvio = document.getElementById("cubreEnvio").value === "si";
+        const precioManual = parseFloat(document.getElementById("precioManual").value || 0);
 
-      const costoTotal = (valorUnidad * unidades) + envioAli + valorImpuestos;
-      const costoUnitario = costoTotal / unidades;
+        const costoTotal = (valorUnidad * unidades + valorEnvio + impuestos);
+        const costoUnitario = costoTotal / unidades;
 
-      const comiClasica = comisiones[categoria].Clasica;
-      const comiPremium = comisiones[categoria].Premium;
+        const comisionClasica = 0.13;
+        const comisionPremium = 0.17;
+        const costoEnvioML = cubreEnvio ? 5400 : 0;
 
-      function precioSugerido(comision) {
-        let envio = envioGratisML ? COSTO_ENVIO : 0;
-        return (costoUnitario + envio + CARGO_FIJO) / (1 - comision) / 0.4;
-      }
+        const precioSugeridoClasica = (costoUnitario + costoEnvioML) / (1 - comisionClasica - 0.6);
+        const precioSugeridoPremium = (costoUnitario + costoEnvioML) / (1 - comisionPremium - 0.6);
 
-      const precioClasica = precioSugerido(comiClasica);
-      const precioPremium = precioSugerido(comiPremium);
+        let html = `<h2>Resultados</h2>
+            <p><strong>Costo unitario total:</strong> ${costoUnitario.toFixed(2)} COP</p>
+            <p><strong>Precio sugerido (Clásica):</strong> ${precioSugeridoClasica.toFixed(2)} COP</p>
+            <p><strong>Precio sugerido (Premium):</strong> ${precioSugeridoPremium.toFixed(2)} COP</p>`;
 
-      let html = `
-        <h3>Resultados</h3>
-        <p><b>Costo unitario total:</b> ${costoUnitario.toFixed(2)} COP</p>
-        <p><b>Precio sugerido (Clásica):</b> ${precioClasica.toFixed(2)} COP</p>
-        <p><b>Precio sugerido (Premium):</b> ${precioPremium.toFixed(2)} COP</p>
-      `;
-
-      if (precioVentaML) {
-        function analizar(precio, comision) {
-          let envio = envioGratisML ? COSTO_ENVIO : 0;
-          const ingreso = precio - (precio * comision) - CARGO_FIJO - envio;
-          const ganancia = ingreso - costoUnitario;
-          const rentabilidad = (ganancia / costoUnitario) * 100;
-          const color = rentabilidad < 60 ? 'red' : 'black';
-          return `<p>Con precio ${precio} y comisión ${comision * 100}% => Ganancia: ${ganancia.toFixed(2)} COP, Rentabilidad: <span style="color:${color}">${rentabilidad.toFixed(2)}%</span></p>`;
+        if (precioManual > 0) {
+            let salidaManual = "<h3>Análisis con tu precio ingresado:</h3>";
+            [
+                { tipo: "Publicación Clásica", comision: comisionClasica },
+                { tipo: "Publicación Premium", comision: comisionPremium }
+            ].forEach(opcion => {
+                const ganancia = precioManual * (1 - opcion.comision) - costoUnitario - costoEnvioML;
+                const rentabilidad = ganancia / costoUnitario * 100;
+                const rentabilidadTexto = rentabilidad < 60 ? `<span class='rentabilidad-roja'>${rentabilidad.toFixed(2)}%</span>` : `${rentabilidad.toFixed(2)}%`;
+                salidaManual += `<p>Con precio ${precioManual} (${opcion.tipo} ${opcion.comision * 100}%) => Ganancia: ${ganancia.toFixed(2)} COP, Rentabilidad: ${rentabilidadTexto}</p>`;
+            });
+            html += salidaManual;
         }
 
-        html += "<h4>Análisis con tu precio ingresado:</h4>";
-        html += analizar(precioVentaML, comiClasica);
-        html += analizar(precioVentaML, comiPremium);
-      }
+        document.getElementById("resultados").innerHTML = html;
 
-      document.getElementById("resultadoAli").innerHTML = html;
-
-      const labels = ["Costo unitario", "Precio sugerido Clásica", "Precio sugerido Premium"];
-      const data = [costoUnitario, precioClasica, precioPremium];
-
-      if (chartAli) chartAli.destroy();
-      const ctx = document.getElementById("graficoAli").getContext("2d");
-      chartAli = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels,
-          datasets: [{
-            label: 'Valores (COP)',
-            data,
-            backgroundColor: ['#FF4747','#4CAF50','#2196F3']
-          }]
-        },
-        options: { responsive: true, plugins: { legend: { display: false } } }
-      });
+        const ctx = document.getElementById("grafico").getContext("2d");
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Clásica', 'Premium'],
+                datasets: [{
+                    label: 'Precio sugerido (COP)',
+                    data: [precioSugeridoClasica, precioSugeridoPremium],
+                    backgroundColor: ['green', 'blue']
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: { display: false }
+                }
+            }
+        });
     }
-  </script>
+</script>
 </body>
 </html>
