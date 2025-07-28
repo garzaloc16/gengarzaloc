@@ -74,10 +74,15 @@
     <input type="number" id="envio" />
 
     <label for="impuestos">¿Cobran impuestos?</label>
-    <select id="impuestos">
+    <select id="impuestos" onchange="toggleImpuestos()">
       <option value="no">No</option>
       <option value="si">Sí</option>
     </select>
+
+    <div id="campoImpuestos" style="display:none;">
+      <label for="valorImpuestos">Valor de los impuestos (COP)</label>
+      <input type="number" id="valorImpuestos" value="0" />
+    </div>
 
     <label><input type="checkbox" id="cubrirEnvio" /> ¿Cubrir el envío en Mercado Libre?</label>
 
@@ -91,11 +96,17 @@
   </div>
 
   <script>
+    function toggleImpuestos() {
+      const impuestos = document.getElementById('impuestos').value;
+      document.getElementById('campoImpuestos').style.display = impuestos === 'si' ? 'block' : 'none';
+    }
+
     function calcular() {
       const unidades = parseFloat(document.getElementById('unidades').value);
       const costoUnidad = parseFloat(document.getElementById('costoUnidad').value);
       const envio = parseFloat(document.getElementById('envio').value);
-      const impuestos = document.getElementById('impuestos').value === 'si';
+      const impuestosSeleccion = document.getElementById('impuestos').value === 'si';
+      const valorImpuestos = impuestosSeleccion ? parseFloat(document.getElementById('valorImpuestos').value) : 0;
       const cubrirEnvio = document.getElementById('cubrirEnvio').checked;
       const precioPersonalizado = parseFloat(document.getElementById('precioPersonalizado').value);
 
@@ -103,9 +114,7 @@
       const comisionPremium = 0.17;
       const envioML = 5900;
 
-      let costoTotal = (unidades * costoUnidad) + envio;
-      if (impuestos) costoTotal *= 1.19;
-
+      let costoTotal = (unidades * costoUnidad) + envio + valorImpuestos;
       const costoUnitario = costoTotal / unidades;
 
       // Se agrega el 50% de rentabilidad en el precio sugerido
