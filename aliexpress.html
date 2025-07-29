@@ -203,49 +203,55 @@
           }
         }
       });
-
-      // También recalculamos los USD
-      calcularUSDmanual();
     }
   </script>
 
   <hr style="margin-top:30px;">
 
-<h2>Conversión a Dólares</h2>
-<div id="dolar-section" style="background:#fff;padding:15px;border-radius:8px;box-shadow:0 0 10px rgba(0,0,0,0.1);max-width:500px;">
-    <label for="manual-usd"><strong>Valor del dólar (COP por USD):</strong></label>
-    <input type="number" id="manual-usd" value="4000" style="width:100%;padding:8px;margin:8px 0;"/>
-    <p><strong>Total pedido en USD:</strong> <span id="total-usd">0</span></p>
-    <p id="alerta-impuestos" style="color:red;font-weight:bold;"></p>
-</div>
+  <!-- Conversión a dólares centrada -->
+  <div style="display:flex;justify-content:center;margin-top:20px;">
+    <div style="text-align:center;">
+      <h2>Conversión a Dólares</h2>
+      <div id="dolar-section" style="background:#fff;padding:15px;border-radius:8px;box-shadow:0 0 10px rgba(0,0,0,0.1);max-width:500px;margin:auto;">
+          <label for="manualUsdRate" style="font-weight:bold;display:block;margin-bottom:10px;">
+            Valor del dólar hoy (COP → USD):
+          </label>
+          <input type="number" id="manualUsdRate" value="4000" style="width:100%;padding:8px;margin-bottom:15px;"/>
 
-<script>
-function calcularUSDmanual() {
-    const unidades = parseFloat(document.getElementById("unidades").value) || 0;
-    const valorUnidad = parseFloat(document.getElementById("costoUnidad").value) || 0;
-    const valorEnvio = parseFloat(document.getElementById("envio").value) || 0;
-    const usdRate = parseFloat(document.getElementById("manual-usd").value) || 1;
+          <p><strong>Total pedido en USD:</strong> <span id="total-usd">0</span></p>
+          <p id="alerta-impuestos" style="color:red;font-weight:bold;"></p>
+      </div>
+    </div>
+  </div>
 
-    const totalCOP = (unidades * valorUnidad) + valorEnvio;
-    const totalUSD = totalCOP / usdRate;
+  <script>
+  function calcularUSDManual() {
+      const usdToCop = parseFloat(document.getElementById("manualUsdRate").value) || 4000;
 
-    document.getElementById("total-usd").textContent = totalUSD.toFixed(2) + " USD";
+      const unidades = parseFloat(document.getElementById("unidades").value) || 0;
+      const valorUnidad = parseFloat(document.getElementById("costoUnidad").value) || 0;
+      const valorEnvio = parseFloat(document.getElementById("envio").value) || 0;
 
-    const alerta = document.getElementById("alerta-impuestos");
-    if (totalUSD > 200) {
-        alerta.textContent = "¡Ojo! Sobrepasa los 200 USD, te van a cobrar impuestos";
-    } else {
-        alerta.textContent = "";
-    }
-}
+      const totalCOP = (unidades * valorUnidad) + valorEnvio;
+      const totalUSD = totalCOP / usdToCop;
 
-// Recalcular cuando cambien los campos
-["unidades", "costoUnidad", "envio", "manual-usd"].forEach(id => {
-    document.getElementById(id).addEventListener("input", calcularUSDmanual);
-    document.getElementById(id).addEventListener("change", calcularUSDmanual);
-});
+      document.getElementById("total-usd").textContent = totalUSD.toFixed(2) + " USD";
 
-calcularUSDmanual();
-</script>
+      const alerta = document.getElementById("alerta-impuestos");
+      if (totalUSD > 200) {
+          alerta.textContent = "🚨 ¡Ojo! Sobrepasa los 200 USD, te van a cobrar impuestos";
+      } else {
+          alerta.textContent = "";
+      }
+  }
+
+  ["unidades","costoUnidad","envio","manualUsdRate"].forEach(id => {
+      document.getElementById(id).addEventListener("input", calcularUSDManual);
+      document.getElementById(id).addEventListener("change", calcularUSDManual);
+  });
+
+  calcularUSDManual();
+  </script>
+
 </body>
 </html>
