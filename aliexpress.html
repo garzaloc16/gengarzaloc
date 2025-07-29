@@ -1,263 +1,36 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Aliexpress - Cálculo de Rentabilidad</title>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f44336;
-      margin: 0;
-      padding: 0;
-      color: #333;
-    }
-    .container {
-      max-width: 800px;
-      margin: auto;
-      background: white;
-      padding: 20px;
-    }
-    h1 {
-      color: #c62828;
-      text-align: center;
-    }
-    label {
-      display: block;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-    input, select {
-      width: 100%;
-      padding: 8px;
-      margin-top: 5px;
-    }
-    button {
-      margin-top: 20px;
-      background: #d32f2f;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      font-size: 16px;
-      cursor: pointer;
-      width: 100%;
-    }
-    .resultados {
-      margin-top: 30px;
-      background: #f3f3f3;
-      padding: 20px;
-      border-radius: 5px;
-    }
-    .resultados h2 {
-      color: #c62828;
-    }
-    .negativo {
-      color: red;
-    }
-    .positivo {
-      color: green;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h1>Aliexpress - Cálculo de Rentabilidad</h1>
-
-    <label for="unidades">Unidades a Comprar</label>
-    <input type="number" id="unidades" />
-
-    <label for="costoUnidad">Valor unidad (COP)</label>
-    <input type="number" id="costoUnidad" />
-
-    <label for="envio">Valor del envío (COP) (Si es gratis deja 0)</label>
-    <input type="number" id="envio" />
-
-    <label for="impuestos">¿Cobran impuestos?</label>
-    <select id="impuestos" onchange="toggleImpuestos()">
-      <option value="no">No</option>
-      <option value="si">Sí</option>
-    </select>
-
-    <div id="campoImpuestos" style="display:none;">
-      <label for="valorImpuestos">Valor de los impuestos (COP)</label>
-      <input type="number" id="valorImpuestos" value="0" />
-    </div>
-
-    <label for="categoria">Categoría del producto</label>
-    <select id="categoria">
-      <option value="otros">Otros</option>
-      <option value="electronica">Electrónica</option>
-      <option value="juguetes">Juguetes</option>
-      <option value="ropa">Ropa / Moda</option>
-    </select>
-
-    <label><input type="checkbox" id="cubrirEnvio" onchange="togglePesoEnvio()" /> ¿Cubrir el envío en Mercado Libre?</label>
-
-    <div id="campoPeso" style="display:none;">
-      <label for="pesoEnvio">Selecciona el rango de peso del producto:</label>
-      <select id="pesoEnvio">
-        <option value="5900">Liviano (0-500g) - $5.900</option>
-        <option value="8900">Mediano (0.5-2kg) - $8.900</option>
-        <option value="13900">Pesado (2-5kg) - $13.900</option>
-        <option value="18900">Muy pesado (+5kg) - $18.900</option>
-      </select>
-    </div>
-
-    <label for="precioPersonalizado">¿Quieres ingresar tu precio de venta en MercadoLibre? (Opcional)</label>
-    <input type="number" id="precioPersonalizado" />
-
-    <button onclick="calcular()">Calcular</button>
-
-    <div class="resultados" id="resultados"></div>
-    <canvas id="grafico" height="150"></canvas>
-  </div>
-
-  <script>
-    function toggleImpuestos() {
-      const impuestos = document.getElementById('impuestos').value;
-      document.getElementById('campoImpuestos').style.display = impuestos === 'si' ? 'block' : 'none';
-    }
-
-    function togglePesoEnvio() {
-      const cubrir = document.getElementById('cubrirEnvio').checked;
-      document.getElementById('campoPeso').style.display = cubrir ? 'block' : 'none';
-    }
-
-    function obtenerComisiones() {
-      const categoria = document.getElementById('categoria').value;
-      switch (categoria) {
-        case 'electronica':
-          return { clasica: 0.16, premium: 0.20 };
-        case 'juguetes':
-          return { clasica: 0.13, premium: 0.17 };
-        case 'ropa':
-          return { clasica: 0.14, premium: 0.18 };
-        default:
-          return { clasica: 0.13, premium: 0.17 };
-      }
-    }
-
-    function calcular() {
-      const unidades = parseFloat(document.getElementById('unidades').value);
-      const costoUnidad = parseFloat(document.getElementById('costoUnidad').value);
-      const envio = parseFloat(document.getElementById('envio').value);
-      const impuestosSeleccion = document.getElementById('impuestos').value === 'si';
-      const valorImpuestos = impuestosSeleccion ? parseFloat(document.getElementById('valorImpuestos').value) : 0;
-      const cubrirEnvio = document.getElementById('cubrirEnvio').checked;
-      const precioPersonalizado = parseFloat(document.getElementById('precioPersonalizado').value);
-      const costoEnvioML = cubrirEnvio ? parseFloat(document.getElementById('pesoEnvio').value) : 0;
-
-      const { clasica: comisionClasica, premium: comisionPremium } = obtenerComisiones();
-
-      let costoTotal = (unidades * costoUnidad) + envio + valorImpuestos;
-      const costoUnitario = costoTotal / unidades;
-
-      const base = costoUnitario + costoEnvioML;
-      let sugeridoClasica = (base * 1.5) / (1 - comisionClasica);
-      let sugeridoPremium = (base * 1.5) / (1 - comisionPremium);
-
-      const rentabilidadSug = 50;
-
-      let html = `
-        <h2>Resultados</h2>
-        <p><strong>Costo unitario total:</strong> ${costoUnitario.toFixed(2)} COP</p>
-        <p><strong>Precio sugerido (Clásica):</strong> ${sugeridoClasica.toFixed(2)} COP (Rentabilidad: ${rentabilidadSug}%)</p>
-        <p><strong>Precio sugerido (Premium):</strong> ${sugeridoPremium.toFixed(2)} COP (Rentabilidad: ${rentabilidadSug}%)</p>
-      `;
-
-      if (!isNaN(precioPersonalizado)) {
-        const netoClasica = precioPersonalizado * (1 - comisionClasica) - costoEnvioML;
-        const gananciaClasica = netoClasica - costoUnitario;
-        const rentabilidadClasica = (gananciaClasica / costoUnitario) * 100;
-
-        const netoPremium = precioPersonalizado * (1 - comisionPremium) - costoEnvioML;
-        const gananciaPremium = netoPremium - costoUnitario;
-        const rentabilidadPremium = (gananciaPremium / costoUnitario) * 100;
-
-        html += `
-          <h3>Análisis con tu precio ingresado:</h3>
-          <p>Publicación Clásica: Ganancia: ${gananciaClasica.toFixed(2)} COP, Rentabilidad: <span class="${rentabilidadClasica < 50 ? 'negativo' : 'positivo'}">${rentabilidadClasica.toFixed(2)}%</span></p>
-          <p>Publicación Premium: Ganancia: ${gananciaPremium.toFixed(2)} COP, Rentabilidad: <span class="${rentabilidadPremium < 50 ? 'negativo' : 'positivo'}">${rentabilidadPremium.toFixed(2)}%</span></p>
-        `;
-      }
-
-      document.getElementById('resultados').innerHTML = html;
-
-      const ctx = document.getElementById('grafico').getContext('2d');
-      if (window.miGrafico) window.miGrafico.destroy();
-      window.miGrafico = new Chart(ctx, {
-        type: 'bar',
-        data: {
-          labels: ['Precio sugerido Clásica', 'Precio sugerido Premium'],
-          datasets: [{
-            label: 'COP',
-            data: [sugeridoClasica, sugeridoPremium],
-            backgroundColor: ['green', 'blue']
-          }]
-        },
-        options: {
-          responsive: true,
-          scales: {
-            y: { beginAtZero: true }
-          }
-        }
-      });
-    }
-  </script>
-  <hr style="margin-top:30px;">
-
 <h2>Conversión a Dólares</h2>
 <div id="dolar-section" style="background:#fff;padding:15px;border-radius:8px;box-shadow:0 0 10px rgba(0,0,0,0.1);max-width:500px;">
-    <p><strong>Valor dólar hoy (COP → USD):</strong> <span id="usd-rate">Cargando...</span></p>
+    <label for="manual-usd"><strong>Valor del dólar (COP por USD):</strong></label>
+    <input type="number" id="manual-usd" value="4000" style="width:100%;padding:8px;margin:8px 0;"/>
     <p><strong>Total pedido en USD:</strong> <span id="total-usd">0</span></p>
     <p id="alerta-impuestos" style="color:red;font-weight:bold;"></p>
 </div>
 
 <script>
-async function cargarTRM() {
-    try {
-        // Usamos una API gratuita que entrega USD/COP
-        const res = await fetch("https://open.er-api.com/v6/latest/USD");
-        const data = await res.json();
-        const usdToCop = data.rates.COP; // 1 USD en COP
-        const copToUsd = 1 / usdToCop; // conversión COP a USD
+function calcularUSDmanual() {
+    const unidades = parseFloat(document.getElementById("unidades").value) || 0;
+    const valorUnidad = parseFloat(document.getElementById("costoUnidad").value) || 0;
+    const valorEnvio = parseFloat(document.getElementById("envio").value) || 0;
+    const usdRate = parseFloat(document.getElementById("manual-usd").value) || 1;
 
-        document.getElementById("usd-rate").textContent = usdToCop.toFixed(2) + " COP";
+    const totalCOP = (unidades * valorUnidad) + valorEnvio;
+    const totalUSD = totalCOP / usdRate;
 
-        function calcularUSD() {
-            const unidades = parseFloat(document.getElementById("unidades").value) || 0;
-            const valorUnidad = parseFloat(document.getElementById("valorUnidad").value) || 0;
-            const valorEnvio = document.getElementById("noAplica").checked
-                ? 0
-                : (parseFloat(document.getElementById("valorEnvio").value) || 0);
+    document.getElementById("total-usd").textContent = totalUSD.toFixed(2) + " USD";
 
-            const totalCOP = (unidades * valorUnidad) + valorEnvio;
-            const totalUSD = totalCOP * copToUsd;
-
-            document.getElementById("total-usd").textContent = totalUSD.toFixed(2) + " USD";
-
-            const alerta = document.getElementById("alerta-impuestos");
-            if (totalUSD > 200) {
-                alerta.textContent = "¡Ojo! Sobrepasa los 200 USD, te van a cobrar impuestos";
-            } else {
-                alerta.textContent = "";
-            }
-        }
-
-        // Recalcula cada vez que cambien estos campos
-        ["unidades", "valorUnidad", "valorEnvio", "noAplica"].forEach(id => {
-            document.getElementById(id).addEventListener("input", calcularUSD);
-            document.getElementById(id).addEventListener("change", calcularUSD);
-        });
-
-        calcularUSD(); // Calcula al cargar
-    } catch (err) {
-        document.getElementById("usd-rate").textContent = "Error cargando TRM";
-        console.error(err);
+    const alerta = document.getElementById("alerta-impuestos");
+    if (totalUSD > 200) {
+        alerta.textContent = "¡Ojo! Sobrepasa los 200 USD, te van a cobrar impuestos";
+    } else {
+        alerta.textContent = "";
     }
 }
-cargarTRM();
-  </script>
-</body>
-</html>
+
+// Recalcular cada vez que cambien estos campos
+["unidades", "costoUnidad", "envio", "manual-usd"].forEach(id => {
+    document.getElementById(id).addEventListener("input", calcularUSDmanual);
+    document.getElementById(id).addEventListener("change", calcularUSDmanual);
+});
+
+calcularUSDmanual(); // cálculo inicial
+</script>
