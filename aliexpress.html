@@ -205,5 +205,59 @@
       });
     }
   </script>
+  <hr style="margin-top:30px;">
+
+<h2>Conversión a Dólares</h2>
+<div id="dolar-section" style="background:#fff;padding:15px;border-radius:8px;box-shadow:0 0 10px rgba(0,0,0,0.1);max-width:500px;">
+    <p><strong>Valor dólar hoy (COP → USD):</strong> <span id="usd-rate">Cargando...</span></p>
+    <p><strong>Total pedido en USD:</strong> <span id="total-usd">0</span></p>
+    <p id="alerta-impuestos" style="color:red;font-weight:bold;"></p>
+</div>
+
+<script>
+async function cargarTRM() {
+    try {
+        // Usamos una API gratuita que entrega USD/COP
+        const res = await fetch("https://open.er-api.com/v6/latest/USD");
+        const data = await res.json();
+        const usdToCop = data.rates.COP; // 1 USD en COP
+        const copToUsd = 1 / usdToCop; // conversión COP a USD
+
+        document.getElementById("usd-rate").textContent = usdToCop.toFixed(2) + " COP";
+
+        function calcularUSD() {
+            const unidades = parseFloat(document.getElementById("unidades").value) || 0;
+            const valorUnidad = parseFloat(document.getElementById("valorUnidad").value) || 0;
+            const valorEnvio = document.getElementById("noAplica").checked
+                ? 0
+                : (parseFloat(document.getElementById("valorEnvio").value) || 0);
+
+            const totalCOP = (unidades * valorUnidad) + valorEnvio;
+            const totalUSD = totalCOP * copToUsd;
+
+            document.getElementById("total-usd").textContent = totalUSD.toFixed(2) + " USD";
+
+            const alerta = document.getElementById("alerta-impuestos");
+            if (totalUSD > 200) {
+                alerta.textContent = "¡Ojo! Sobrepasa los 200 USD, te van a cobrar impuestos";
+            } else {
+                alerta.textContent = "";
+            }
+        }
+
+        // Recalcula cada vez que cambien estos campos
+        ["unidades", "valorUnidad", "valorEnvio", "noAplica"].forEach(id => {
+            document.getElementById(id).addEventListener("input", calcularUSD);
+            document.getElementById(id).addEventListener("change", calcularUSD);
+        });
+
+        calcularUSD(); // Calcula al cargar
+    } catch (err) {
+        document.getElementById("usd-rate").textContent = "Error cargando TRM";
+        console.error(err);
+    }
+}
+cargarTRM();
+  </script>
 </body>
 </html>
