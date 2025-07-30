@@ -1,166 +1,141 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Calculadoras MercadoLibre</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <style>
-    body { background-color: #f9fafb; }
-    .card { background: white; padding: 1.5rem; border-radius: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
-    .result { background: #dcfce7; padding: 1rem; border-radius: 0.5rem; font-weight: bold; text-align: center; }
-  </style>
-</head>
-<body class="flex flex-col items-center p-4 space-y-6">
+<div class="card max-w-2xl w-full mt-8">
+  <h2 class="text-2xl font-bold mb-4 text-center">Cálculo de Ventas en MercadoLibre</h2>
 
-  <!-- Logo -->
-  <img src="https://http2.mlstatic.com/frontend-assets/ui-navigation/5.22.7/mercadolibre/logo__large_plus.png" class="w-28" alt="MercadoLibre">
+  <label class="font-semibold">¿Usar costo calculado del formulario 1?</label>
+  <select id="usarCosto" class="w-full border p-2 rounded mb-4">
+    <option>Sí</option>
+    <option>No</option>
+  </select>
 
-  <!-- Formulario de Compras -->
-  <div class="card max-w-md w-full">
-    <h2 class="text-xl font-bold mb-4 text-center">Cálculo de Compras</h2>
+  <label class="font-semibold">Costo base manual (COP)</label>
+  <input id="costoBaseManual" type="number" class="w-full border p-2 rounded mb-4" value="0">
 
-    <label>Cantidad de productos</label>
-    <input id="cantidad" type="number" class="w-full border p-2 rounded mb-2">
+  <label class="font-semibold">Categoría</label>
+  <select id="categoria" class="w-full border p-2 rounded mb-4">
+    <!-- Lista extensa de categorías -->
+    <option>Celulares y Teléfonos</option>
+    <option>Computación</option>
+    <option>Consolas y Videojuegos</option>
+    <option>Electrodomésticos</option>
+    <option>Hogar y Muebles</option>
+    <option>Accesorios para Vehículos</option>
+    <option>Repuestos de Vehículos</option>
+    <option>Herramientas</option>
+    <option>Construcción</option>
+    <option>Ropa, Zapatos y Accesorios</option>
+    <option>Joyería y Relojes</option>
+    <option>Belleza y Cuidado Personal</option>
+    <option>Salud y Equipos Médicos</option>
+    <option>Bebés</option>
+    <option>Juguetes</option>
+    <option>Deportes y Fitness</option>
+    <option>Arte y Antigüedades</option>
+    <option>Libros, Revistas y Comics</option>
+    <option>Instrumentos Musicales</option>
+    <option>Electrónica, Audio y Video</option>
+    <option>Cámaras y Accesorios</option>
+    <option>Inmuebles</option>
+    <option>Servicios</option>
+    <option>Otros</option>
+  </select>
 
-    <label>Costo por unidad (COP)</label>
-    <input id="costoUnidad" type="number" class="w-full border p-2 rounded mb-2">
+  <label class="font-semibold">Tipo de publicación</label>
+  <select id="tipoPublicacion" class="w-full border p-2 rounded mb-4">
+    <option value="premium">Premium</option>
+    <option value="clasica">Clásica</option>
+  </select>
 
-    <label>¿Te cobraron envío?</label>
-    <select id="cobroEnvio" class="w-full border p-2 rounded mb-2">
-      <option>No</option>
-      <option>Sí</option>
-    </select>
+  <label class="font-semibold">¿Ofrecer envío gratis?</label>
+  <select id="envioGratis" class="w-full border p-2 rounded mb-4">
+    <option>No</option>
+    <option>Sí</option>
+  </select>
 
-    <label>Valor del envío (COP)</label>
-    <input id="valorEnvio" type="number" class="w-full border p-2 rounded mb-2" value="0">
+  <label class="font-semibold">Peso del producto (kg)</label>
+  <input id="peso" type="number" step="0.1" class="w-full border p-2 rounded mb-4" value="1">
 
-    <label>¿Te cobraron impuestos?</label>
-    <select id="cobroImpuestos" class="w-full border p-2 rounded mb-4">
-      <option>No</option>
-      <option>Sí</option>
-    </select>
+  <hr class="my-4">
 
-    <div id="resultadoCompras" class="result">Costo total: $0</div>
-    <div id="resultadoUnidad" class="result mt-2">Costo por unidad final: $0</div>
+  <label class="font-semibold">¿Quieres poner tu precio de venta manual?</label>
+  <input id="precioVentaManual" type="number" class="w-full border p-2 rounded mb-4" value="0">
+
+  <button onclick="calcularVentas()" class="bg-blue-600 hover:bg-blue-700 text-white rounded p-2 w-full">
+    Calcular
+  </button>
+
+  <div id="resultadoVentas" class="result mt-4 p-4 rounded bg-gray-100">
+    Calcula el precio sugerido...
   </div>
-
-  <!-- Formulario de Ventas -->
-  <div class="card max-w-md w-full">
-    <h2 class="text-xl font-bold mb-4 text-center">Cálculo de Ventas en MercadoLibre</h2>
-
-    <label>¿Usar costo calculado del formulario 1?</label>
-    <select id="usarCosto" class="w-full border p-2 rounded mb-4">
-      <option>Sí</option>
-      <option>No</option>
-    </select>
-
-    <label>Costo base (COP)</label>
-    <input id="costoBaseManual" type="number" class="w-full border p-2 rounded mb-4" value="0">
-
-    <label>Categoría</label>
-    <select id="categoria" class="w-full border p-2 rounded mb-2">
-      <option>Celulares y Teléfonos</option>
-      <option>Computación</option>
-      <option>Electrodomésticos</option>
-      <option>Consolas y Videojuegos</option>
-      <option>Accesorios</option>
-    </select>
-
-    <label>Tipo de publicación</label>
-    <select id="tipoPublicacion" class="w-full border p-2 rounded mb-2">
-      <option value="0.13">Premium (13%)</option>
-      <option value="0.08">Clásica (8%)</option>
-    </select>
-
-    <label>¿Ofrecer envío gratis?</label>
-    <select id="envioGratis" class="w-full border p-2 rounded mb-2">
-      <option>No</option>
-      <option>Sí</option>
-    </select>
-
-    <label>Peso del producto (kg)</label>
-    <input id="peso" type="number" step="0.1" class="w-full border p-2 rounded mb-4" value="1">
-
-    <hr class="my-4">
-
-    <label>¿Quieres poner tu precio de venta manual?</label>
-    <input id="precioVentaManual" type="number" class="w-full border p-2 rounded mb-4" value="0">
-
-    <div id="resultadoVentas" class="result">Calcula el precio sugerido...</div>
-  </div>
+</div>
 
 <script>
+function comisionPorCategoria(categoria, tipo) {
+  // Valores base según documentación de Mercado Libre Colombia
+  let comision = 0.13; // Premium
+  if (tipo === 'clasica') comision = 0.08;
+
+  // Ajustes para ciertas categorías
+  const cat = categoria.toLowerCase();
+  if (cat.includes('vehículo') || cat.includes('repuestos')) {
+    comision = tipo === 'premium' ? 0.11 : 0.07; 
+  }
+  if (cat.includes('inmueble') || cat.includes('servicio')) {
+    comision = 0.0; // estos no tienen comisión estándar
+  }
+  if (cat.includes('ropa') || cat.includes('zapatos')) {
+    comision = tipo === 'premium' ? 0.16 : 0.13;
+  }
+
+  return comision;
+}
+
 function formatoCOP(valor) {
-  return valor.toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
+  return valor.toLocaleString('es-CO', {style:'currency', currency:'COP', minimumFractionDigits:0});
 }
 
-// --- Variables globales ---
-let costoFinalUnidad = 0;
-
-// --- Cálculo Compras ---
-function calcularCompras() {
-  const cantidad = parseFloat(document.getElementById('cantidad').value) || 0;
-  const costoUnidad = parseFloat(document.getElementById('costoUnidad').value) || 0;
-  const cobroEnvio = document.getElementById('cobroEnvio').value;
-  const valorEnvio = parseFloat(document.getElementById('valorEnvio').value) || 0;
-  const cobroImpuestos = document.getElementById('cobroImpuestos').value;
-
-  let total = cantidad * costoUnidad;
-  if (cobroEnvio === 'Sí') total += valorEnvio;
-  if (cobroImpuestos === 'Sí') total *= 1.19; // 19% IVA
-
-  costoFinalUnidad = cantidad > 0 ? total / cantidad : 0;
-
-  document.getElementById('resultadoCompras').textContent = `Costo total: ${formatoCOP(total)}`;
-  document.getElementById('resultadoUnidad').textContent = `Costo por unidad final: ${formatoCOP(costoFinalUnidad)}`;
-
-  calcularVentas(); // recalcula automáticamente el segundo formulario
-}
-
-['cantidad','costoUnidad','cobroEnvio','valorEnvio','cobroImpuestos'].forEach(id=>{
-  document.getElementById(id).addEventListener('input', calcularCompras);
-  document.getElementById(id).addEventListener('change', calcularCompras);
-});
-
-// --- Cálculo Ventas ---
 function calcularVentas() {
   const usarCosto = document.getElementById('usarCosto').value;
-  const comision = parseFloat(document.getElementById('tipoPublicacion').value);
+  const categoria = document.getElementById('categoria').value;
+  const tipo = document.getElementById('tipoPublicacion').value;
   const envioGratis = document.getElementById('envioGratis').value;
   const peso = parseFloat(document.getElementById('peso').value) || 1;
+  const precioVentaManual = parseFloat(document.getElementById('precioVentaManual').value) || 0;
+
+  const comision = comisionPorCategoria(categoria, tipo);
 
   let costoBase = usarCosto === 'Sí'
-    ? costoFinalUnidad
+    ? (typeof costoFinalUnidad !== 'undefined' ? costoFinalUnidad : 0)
     : parseFloat(document.getElementById('costoBaseManual').value) || 0;
 
-  // costo envío
   let costoEnvio = 0;
   if (envioGratis === 'Sí') {
-    costoEnvio = peso <= 1 ? 7000 : 12000; // ejemplo
+    costoEnvio = peso <= 1 ? 7000 : 12000;
   }
 
-  // Precio sugerido mínimo para no perder
-  const precioSugerido = (costoBase + costoEnvio) / (1 - comision);
+  const costoTotal = costoBase + costoEnvio;
 
-  // Si el usuario pone precio manual, calculamos ganancia
-  const precioVentaManual = parseFloat(document.getElementById('precioVentaManual').value) || 0;
-  let texto = `Precio sugerido para no perder: ${formatoCOP(precioSugerido)}`;
+  // Precio sugerido con 50% de rentabilidad
+  const precioSugerido = (costoTotal * 1.5) / (1 - comision);
+
+  let texto = `Precio sugerido (50% rentabilidad): ${formatoCOP(precioSugerido)}`;
 
   if (precioVentaManual > 0) {
-    const ganancia = precioVentaManual - (precioVentaManual * comision) - costoBase - costoEnvio;
-    const estado = ganancia >= 0 ? "GANANCIA" : "PÉRDIDA";
-    texto += `\nSi vendes a ${formatoCOP(precioVentaManual)}: ${estado} de ${formatoCOP(ganancia)}`;
+    const ingresoNeto = precioVentaManual * (1 - comision);
+    const ganancia = ingresoNeto - costoTotal;
+    const rentabilidad = (ganancia / costoTotal) * 100;
+    const esGanancia = ganancia >= 0;
+
+    texto += `\n\nSi vendes a ${formatoCOP(precioVentaManual)}:`;
+
+    texto += `\n${esGanancia ? 'GANANCIA' : 'PÉRDIDA'}: ${formatoCOP(ganancia)} (${rentabilidad.toFixed(1)}% rentabilidad)`;
+
+    const resultadoDiv = document.getElementById('resultadoVentas');
+    resultadoDiv.innerHTML = texto.replace(/\n/g, "<br>");
+    resultadoDiv.style.color = esGanancia ? "green" : "red";
+  } else {
+    const resultadoDiv = document.getElementById('resultadoVentas');
+    resultadoDiv.innerHTML = texto;
+    resultadoDiv.style.color = "black";
   }
-
-  document.getElementById('resultadoVentas').textContent = texto;
 }
-
-['usarCosto','costoBaseManual','categoria','tipoPublicacion','envioGratis','peso','precioVentaManual'].forEach(id=>{
-  document.getElementById(id).addEventListener('input', calcularVentas);
-  document.getElementById(id).addEventListener('change', calcularVentas);
-});
 </script>
-
-</body>
-</html>
