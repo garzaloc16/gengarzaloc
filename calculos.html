@@ -210,11 +210,15 @@
         const esGanancia = ganancia >= 0;
         texto += `\n\nSi vendes a ${formatoCOP(precioVentaManual)}:`;
         texto += `\n${esGanancia ? 'GANANCIA' : 'PÉRDIDA'}: ${formatoCOP(ganancia)} (${rentabilidad.toFixed(1)}% rentabilidad)`;
-        texto += `\nGanancia neta por unidad: ${formatoCOP(ganancia)}`; // *** NUEVA LÍNEA ***
+        texto += `\nGanancia neta por unidad: ${formatoCOP(ganancia)}`;
         resultadoDiv.innerHTML = texto.replace(/\n/g, "<br>");
         resultadoDiv.style.color = esGanancia ? "green" : "red";
       } else {
-        resultadoDiv.innerHTML = texto;
+        // Calcular ganancia neta por unidad usando el precio sugerido
+        const ingresoNetoSugerido = precioSugerido * (1 - comision);
+        const gananciaSugerida = ingresoNetoSugerido - costoTotal;
+        texto += `\nGanancia neta por unidad (con precio sugerido): ${formatoCOP(gananciaSugerida)}`;
+        resultadoDiv.innerHTML = texto.replace(/\n/g, "<br>");
         resultadoDiv.style.color = "black";
       }
     }
