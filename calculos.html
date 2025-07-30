@@ -1,4 +1,4 @@
-https://http2.mlstatic.com/frontend-assets/ui-navigation/5.20.4/mercadolibre/logo__small.png<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -34,3 +34,162 @@ https://http2.mlstatic.com/frontend-assets/ui-navigation/5.20.4/mercadolibre/log
         max-width: 500px;
     }
     label {
+        font-weight: 600;
+        display: block;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        font-size: 15px;
+    }
+    input, select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 16px;
+        box-sizing: border-box;
+        transition: border-color 0.2s ease-in-out;
+        background-color: #fff;
+    }
+    input:focus, select:focus {
+        outline: none;
+        border-color: #4a90e2;
+    }
+    #resultado {
+        margin-top: 20px;
+        padding: 15px;
+        background: #e8f9e8;
+        border-radius: 8px;
+        font-weight: bold;
+        color: #2d572c;
+        text-align: center;
+        font-size: 18px;
+        min-height: 40px;
+        box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+    }
+    .oculto {
+        display: none;
+    }
+</style>
+</head>
+<body>
+
+<div class="logo">
+    <img src="https://http2.mlstatic.com/frontend-assets/ui-navigation/5.20.4/mercadolibre/logo__small.png" alt="MercadoLibre">
+</div>
+
+<div class="form-section">
+    <h2>Cálculo de Compras</h2>
+
+    <label for="cantidad">Cantidad de productos</label>
+    <input type="number" id="cantidad" value="5">
+
+    <label for="costo">Costo por unidad (COP)</label>
+    <input type="number" id="costo" value="15600">
+
+    <label for="envio-cobrado">¿Te cobraron envío?</label>
+    <select id="envio-cobrado">
+        <option value="No">No</option>
+        <option value="Si">Sí</option>
+    </select>
+
+    <div id="grupo-envio" class="oculto">
+        <label for="valor-envio">Valor del envío (COP)</label>
+        <input type="number" id="valor-envio" value="0">
+    </div>
+
+    <label for="impuestos-cobrados">¿Te cobraron impuestos?</label>
+    <select id="impuestos-cobrados">
+        <option value="No">No</option>
+        <option value="Si">Sí</option>
+    </select>
+
+    <div id="grupo-impuestos" class="oculto">
+        <label for="valor-impuestos">Valor de los impuestos (COP)</label>
+        <input type="number" id="valor-impuestos" value="0">
+    </div>
+
+    <div id="resultado"></div>
+</div>
+
+<div class="form-section">
+    <h2>Políticas MercadoLibre / Cálculo de Ventas</h2>
+
+    <label for="categoria">Categoría</label>
+    <select id="categoria">
+        <option value="Electronica">Electrónica</option>
+        <option value="Celulares y Telefonos">Celulares y Teléfonos</option>
+        <option value="Computacion">Computación</option>
+        <option value="Consolas y Videojuegos">Consolas y Videojuegos</option>
+        <option value="Electrodomesticos">Electrodomésticos</option>
+        <option value="Hogar">Hogar</option>
+        <option value="Herramientas">Herramientas</option>
+        <option value="Moda">Moda</option>
+        <option value="Deportes y Fitness">Deportes y Fitness</option>
+        <option value="Juguetes">Juguetes</option>
+        <option value="Instrumentos Musicales">Instrumentos Musicales</option>
+        <option value="Accesorios para Vehiculos">Accesorios para Vehículos</option>
+        <option value="Belleza y Cuidado Personal">Belleza y Cuidado Personal</option>
+        <option value="Bebes">Bebés</option>
+        <option value="Animales y Mascotas">Animales y Mascotas</option>
+        <option value="Libros Revistas y Comics">Libros, Revistas y Comics</option>
+        <option value="Musica Peliculas y Series">Música, Películas y Series</option>
+    </select>
+
+    <label for="publicacion">Tipo de publicación</label>
+    <select id="publicacion">
+        <option value="Clasica">Clásica</option>
+        <option value="Premium">Premium</option>
+    </select>
+
+    <label for="envio">¿Ofrecer envío gratis?</label>
+    <select id="envio">
+        <option value="Si">Sí</option>
+        <option value="No">No</option>
+    </select>
+
+    <label for="peso">Peso del producto (kg)</label>
+    <input type="number" id="peso" step="0.1">
+</div>
+
+<script>
+function actualizarVisibilidad() {
+    const envioCobrado = document.getElementById('envio-cobrado').value === "Si";
+    const impuestosCobrados = document.getElementById('impuestos-cobrados').value === "Si";
+
+    document.getElementById('grupo-envio').classList.toggle('oculto', !envioCobrado);
+    document.getElementById('grupo-impuestos').classList.toggle('oculto', !impuestosCobrados);
+}
+
+function calcularTotal() {
+    const cantidad = parseInt(document.getElementById('cantidad').value) || 0;
+    const costo = parseInt(document.getElementById('costo').value) || 0;
+    const envioCobrado = document.getElementById('envio-cobrado').value === "Si";
+    const valorEnvio = envioCobrado ? (parseInt(document.getElementById('valor-envio').value) || 0) : 0;
+    const impuestosCobrados = document.getElementById('impuestos-cobrados').value === "Si";
+    const valorImpuestos = impuestosCobrados ? (parseInt(document.getElementById('valor-impuestos').value) || 0) : 0;
+
+    const total = (cantidad * costo) + valorEnvio + valorImpuestos;
+
+    const resultadoDiv = document.getElementById('resultado');
+    if (total > 0) {
+        resultadoDiv.innerText = "Costo total: " +
+            total.toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
+    } else {
+        resultadoDiv.innerText = "";
+    }
+}
+
+// Eventos
+['cantidad','costo','valor-envio','valor-impuestos','envio-cobrado','impuestos-cobrados']
+.forEach(id => document.getElementById(id).addEventListener('input', () => {
+    actualizarVisibilidad();
+    calcularTotal();
+}));
+
+// Inicializar
+actualizarVisibilidad();
+calcularTotal();
+</script>
+
+</body>
+</html>
