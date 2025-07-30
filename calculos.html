@@ -210,6 +210,7 @@
         const esGanancia = ganancia >= 0;
         texto += `\n\nSi vendes a ${formatoCOP(precioVentaManual)}:`;
         texto += `\n${esGanancia ? 'GANANCIA' : 'PÉRDIDA'}: ${formatoCOP(ganancia)} (${rentabilidad.toFixed(1)}% rentabilidad)`;
+        texto += `\nGanancia neta por unidad: ${formatoCOP(ganancia)}`; // *** NUEVA LÍNEA ***
         resultadoDiv.innerHTML = texto.replace(/\n/g, "<br>");
         resultadoDiv.style.color = esGanancia ? "green" : "red";
       } else {
