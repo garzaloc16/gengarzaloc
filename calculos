@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Cálculo de Compras y Ventas</title>
+  <style>
+    body { margin:0; font-family: Arial, sans-serif; background:#f0f2f5; color:#333; }
+    .container { max-width:600px; margin:20px auto; padding:20px; background:#fff; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+    h1, h2 { text-align:center; }
+    label { display:block; margin:12px 0 5px; }
+    input, select { width:100%; padding:10px; border:1px solid #ccc; border-radius:4px; box-sizing:border-box; }
+    .hidden { display:none; }
+    button { margin-top:20px; width:100%; padding:12px; background:#0066cc; color:#fff; border:none; border-radius:4px; font-size:16px; cursor:pointer; }
+    button:hover { background:#005bb5; }
+    .result { margin-top:20px; background:#e8f4e8; padding:15px; border-radius:4px; }
+    @media (max-width:480px){ .container { margin:10px; padding:15px; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Cálculo de Compras y Ventas</h1>
+
+    <!-- Formulario 1 -->
+    <form id="formCompra">
+      <h2>Formulario de Compras</h2>
+      <label>Cantidad a comprar</label><input type="number" id="cantidad" min="1" required>
+      <label>Valor de la unidad (precio de compra)</label><input type="number" id="valorUnidad" min="0" step="0.01" required>
+      <label>¿Hubo cobro de envío?</label>
+      <select id="envio"><option value="no">No</option><option value="si">Sí</option></select>
+      <div id="campoEnvio" class="hidden">
+        <label>Valor del envío</label><input type="number" id="valorEnvio" min="0" step="0.01">
+      </div>
+      <label>¿Cobraron impuestos?</label>
+      <select id="impuestos"><option value="no">No</option><option value="si">Sí</option></select>
+      <div id="campoImpuestos" class="hidden">
+        <label>Valor de impuestos</label><input type="number" id="valorImpuestos" min="0" step="0.01">
+      </div>
+      <button type="button" id="calcular1">Calcular</button>
+      <div class="result" id="res1"></div>
+    </form>
+
+    <!-- Formulario 2 -->
+    <form id="formVenta">
+      <h2>Políticas MercadoLibre / Cálculo de Ventas</h2>
+      <label>Categoría</label>
+      <select id="categoria"></select>
+      <label>Tipo de publicación</label>
+      <select id="publicacion"><option value="clasica">Clásica</option><option value="premium">Premium</option></select>
+      <label>¿Ofrecer envío gratis?</label><select id="gratisEnvio"><option value="no">No</option><option value="si">Sí</option></select>
+      <div id="campoPeso" class="hidden">
+        <label>Peso del producto (kg)</label><input type="number" id="peso" min="0.01" step="0.01">
+      </div>
+      <label>¿Ingresar precio de venta manual?</label>
+      <select id="precioManual"><option value="no">No</option><option value="si">Sí</option></select>
+      <div id="campoPrecioManual" class="hidden">
+        <label>Precio de venta manual</label><input type="number" id="precioManualVal" min="0" step="0.01">
+      </div>
+      <button type="button" id="calcular2">Calcular ventas</button>
+      <div class="result" id="res2"></div>
+    </form>
+  </div>
+
+<script>
+// Tablas estáticas (de ejemplo con rangos genéricos)
+const comisiones = {
+  "Electrónica": { clasica: 0.13, premium: 0.16 },
+  "Juguetes": { clasica: 0.12, premium: 0.15 },
+  "Ropa": { clasica: 0.11, premium: 0.14 },
+  "Hogar": { clasica: 0.12, premium: 0.15 },
+  // … agrega más categorías según datos reales
+};
+const envioGratis = [
+  { maxPeso: 1, costo: 5000 },
+  { maxPeso: 5, costo: 8000 },
+  { maxPeso: 10, costo: 12000 },
+  { maxPeso: Infinity, costo: 20000 }
+];
+
+window.onload = ()=> {
+  const selCat = document.getElementById('categoria');
+  Object.keys(comisiones).forEach(cat=>{
+    const opt = document.createElement('option');
+    opt.value = cat; opt.text = cat;
+    selCat.add(opt);
+  });
+};
+
+document.getElementById('envio').addEventListener('change', e=>{
+  document.getElementById('campoEnvio').classList.toggle('hidden', e.target.value!=='si');
+});
+document.getElementById('impuestos').addEventListener('change', e=>{
+  document.getElementById('campoImpuestos').classList.toggle('hidden', e.target.value!=='si');
+});
+document.getElementById('gratisEnvio').addEventListener('change', e=>{
+  document.getElementById('campoPeso').classList.toggle('hidden', e.target.value!=='si');
+});
+document.getElementById('precioManual').addEventListener('change', e=>{
+  document.getElementById('campoPrecioManual').classList.toggle('hidden', e.target.value!=='si');
+});
+
+function calcularCosto1(){
+  const cantidad = +document.getElementById('cantidad').value || 0;
+  const valorUnidad = +document.getElementById('valorUnidad').value || 0;
+  let total = cantidad * valorUnidad;
+  if (document.getElementById('envio').value==='si'){
+    total += +document.getElementById('valorEnvio').value || 0;
+  }
+  if (document.getElementById('impuestos').value==='si'){
+    total += +document.getElementById('valorImpuestos').value || 0;
+  }
+  const costoUnidad = total / (cantidad || 1);
+  document.getElementById('res1').textContent =
+    `Costo total: COP ${total.toFixed(2)} | Costo por unidad: COP ${costoUnidad.toFixed(2)}`;
+  return costoUnidad;
+}
+
+function calcularCostoEnvio(peso){
+  for (let r of envioGratis) {
+    if (peso <= r.maxPeso) return r.costo;
+  }
+  return 0;
+}
+
+function calcular2(){
+  const costoUnidad = calcularCosto1();
+  const cat = document.getElementById('categoria').value;
+  const pub = document.getElementById('publicacion').value;
+  const gratis = document.getElementById('gratisEnvio').value === 'si';
+  const peso = gratis ? (+document.getElementById('peso').value || 0) : 0;
+
+  const precioSug = costoUnidad * 1.5;
+  const manual = document.getElementById('precioManual').value==='si';
+  const precioFinal = manual ? (+document.getElementById('precioManualVal').value||0) : precioSug;
+
+  const resArea = document.getElementById('res2');
+  resArea.innerHTML = `<strong>Precio sugerido (50% margen): COP ${precioSug.toFixed(2)}</strong><br><br>`;
+
+  ['clasica','premium'].forEach(tipo=>{
+    const com = comisiones[cat][tipo];
+    const comisionVal = precioFinal * com;
+    const envioVal = (gratis ? calcularCostoEnvio(peso) : 0);
+    const ganancia = precioFinal - costoUnidad - comisionVal - envioVal;
+    const pct = (ganancia / precioFinal) * 100;
+    resArea.innerHTML += `<strong>${tipo.charAt(0).toUpperCase()+tipo.slice(1)}:</strong> Comisión ${(com*100).toFixed(1)}%, Ganancia neta COP ${ganancia.toFixed(2)}, % ganancia ${(pct).toFixed(1)}%<br>`;
+  });
+}
+
+document.getElementById('calcular1').onclick = calcularCosto1;
+document.getElementById('calcular2').onclick = calcular2;
+</script>
