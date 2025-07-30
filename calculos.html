@@ -3,140 +3,151 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cálculo de Compras y Ventas</title>
+<title>Cálculo de Compras</title>
 <style>
-  body { margin:0; font-family: Arial, sans-serif; padding:20px;}
-  .container { max-width:600px; margin:auto; }
-  h1, h2 { text-align:center; }
-  label { display:block; margin:12px 0 6px; }
-  input, select { width:100%; padding:8px; }
-  .hidden { display:none; }
-  button { margin-top:20px; width:100%; padding:10px; font-size:16px; cursor:pointer; }
-  button:hover { background:#005bb5; color:white; }
-  .result { margin-top:20px; background:#e8f5e9; padding:15px; border-radius:8px; }
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f6fa;
+        margin: 0;
+        padding: 20px;
+        color: #333;
+    }
+    .logo {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .logo img {
+        max-width: 160px;
+        height: auto;
+    }
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #222;
+    }
+    .form-section {
+        background: #fff;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        margin: 0 auto 30px auto;
+        max-width: 500px;
+    }
+    label {
+        font-weight: 600;
+        display: block;
+        margin-top: 15px;
+        margin-bottom: 5px;
+        font-size: 15px;
+    }
+    input, select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        font-size: 16px;
+        box-sizing: border-box;
+        transition: border-color 0.2s ease-in-out;
+        background-color: #fff;
+    }
+    input:focus, select:focus {
+        outline: none;
+        border-color: #4a90e2;
+    }
+    #resultado {
+        margin-top: 20px;
+        padding: 15px;
+        background: #e8f9e8;
+        border-radius: 8px;
+        font-weight: bold;
+        color: #2d572c;
+        text-align: center;
+        font-size: 18px;
+        min-height: 40px;
+        box-shadow: inset 0 0 5px rgba(0,0,0,0.05);
+    }
 </style>
 </head>
 <body>
-<div class="container">
-  <h1>Cálculo de Compras</h1>
-  <label for="cantidad">Cantidad de productos:</label>
-  <input type="number" id="cantidad" value="5">
 
-  <label for="costo">Costo por compra (COP):</label>
-  <input type="number" id="costo" value="15600">
+<div class="logo">
+    <img src="https://http2.mlstatic.com/frontend-assets/ui-navigation/5.20.4/mercadolibre/logo__small.png" alt="MercadoLibre">
+</div>
 
-  <button onclick="calcularCosto()">Calcular costo total</button>
-  <div id="resultado" class="result"></div>
+<div class="form-section">
+    <h2>Cálculo de Compras</h2>
 
-  <h2>Políticas MercadoLibre / Cálculo de Ventas</h2>
+    <label for="cantidad">Cantidad de productos</label>
+    <input type="number" id="cantidad" value="5">
 
-  <label for="categoria">Categoría</label>
-  <select id="categoria">
-    <option value="Electrónica">Electrónica</option>
-    <option value="Hogar">Hogar</option>
-    <option value="Ropa">Ropa</option>
-  </select>
+    <label for="costo">Costo por compra (COP)</label>
+    <input type="number" id="costo" value="15600">
 
-  <label for="tipo">Tipo de publicación</label>
-  <select id="tipo">
-    <option value="Clásica">Clasica</option>
-    <option value="Premium">Premium</option>
-  </select>
+    <div id="resultado"></div>
+</div>
 
-  <label for="envioGratis">¿Ofrecer envío gratis?</label>
-  <select id="envioGratis">
-    <option value="Si">Sí</option>
-    <option value="No">No</option>
-  </select>
+<div class="form-section">
+    <h2>Políticas MercadoLibre / Cálculo de Ventas</h2>
 
-  <label for="peso">Peso del producto (kg)</label>
-  <input type="number" id="peso" value="1">
+    <label for="categoria">Categoría</label>
+    <select id="categoria">
+        <option value="Electronica">Electrónica</option>
+        <option value="Celulares y Telefonos">Celulares y Teléfonos</option>
+        <option value="Computacion">Computación</option>
+        <option value="Consolas y Videojuegos">Consolas y Videojuegos</option>
+        <option value="Electrodomesticos">Electrodomésticos</option>
+        <option value="Hogar">Hogar</option>
+        <option value="Herramientas">Herramientas</option>
+        <option value="Moda">Moda</option>
+        <option value="Deportes y Fitness">Deportes y Fitness</option>
+        <option value="Juguetes">Juguetes</option>
+        <option value="Instrumentos Musicales">Instrumentos Musicales</option>
+        <option value="Accesorios para Vehiculos">Accesorios para Vehículos</option>
+        <option value="Belleza y Cuidado Personal">Belleza y Cuidado Personal</option>
+        <option value="Bebes">Bebés</option>
+        <option value="Animales y Mascotas">Animales y Mascotas</option>
+        <option value="Libros Revistas y Comics">Libros, Revistas y Comics</option>
+        <option value="Musica Peliculas y Series">Música, Películas y Series</option>
+    </select>
 
-  <label for="manual">¿Ingresar precio de venta manual?</label>
-  <select id="manual" onchange="toggleManualInput()">
-    <option value="No">No</option>
-    <option value="Si">Sí</option>
-  </select>
+    <label for="publicacion">Tipo de publicación</label>
+    <select id="publicacion">
+        <option value="Clasica">Clásica</option>
+        <option value="Premium">Premium</option>
+    </select>
 
-  <div id="manualInput" class="hidden">
-    <label for="precioManual">Precio de venta (COP):</label>
-    <input type="number" id="precioManual">
-  </div>
+    <label for="envio">¿Ofrecer envío gratis?</label>
+    <select id="envio">
+        <option value="Si">Sí</option>
+        <option value="No">No</option>
+    </select>
 
-  <button onclick="calcularVentas()">Calcular ventas</button>
-  <div id="resultadoVentas" class="result"></div>
+    <label for="peso">Peso del producto (kg)</label>
+    <input type="number" id="peso" step="0.1">
 </div>
 
 <script>
-function calcularCosto() {
-  const cantidad = parseFloat(document.getElementById('cantidad').value);
-  const costo = parseFloat(document.getElementById('costo').value);
-  const costoTotal = cantidad * costo;
-  const costoUnidad = costoTotal / cantidad;
+function calcularTotal() {
+    const cantidad = parseInt(document.getElementById('cantidad').value) || 0;
+    const costo = parseInt(document.getElementById('costo').value) || 0;
+    const total = cantidad * costo;
 
-  const div = document.getElementById('resultado');
-  div.textContent = `Costo total: COP ${costoTotal.toFixed(2)} | Costo por unidad: COP ${costoUnidad.toFixed(2)}`;
-
-  // Guardar costo por unidad en un atributo para usarlo después
-  div.dataset.costoUnidad = costoUnidad;
+    const resultadoDiv = document.getElementById('resultado');
+    if (total > 0) {
+        resultadoDiv.innerText = "Costo total: " +
+            total.toLocaleString('es-CO', { style: 'currency', currency: 'COP' });
+    } else {
+        resultadoDiv.innerText = "";
+    }
 }
 
-function toggleManualInput() {
-  const manual = document.getElementById('manual').value;
-  document.getElementById('manualInput').classList.toggle('hidden', manual === "No");
-}
+// Eventos para cálculo automático
+document.getElementById('cantidad').addEventListener('input', calcularTotal);
+document.getElementById('costo').addEventListener('input', calcularTotal);
 
-function calcularVentas() {
-  const resultadoDiv = document.getElementById('resultado');
-  const costoUnidad = parseFloat(resultadoDiv.dataset.costoUnidad || 0);
-
-  if (!costoUnidad) {
-    alert("Primero calcula el costo en la sección superior.");
-    return;
-  }
-
-  const categoria = document.getElementById('categoria').value;
-  const tipo = document.getElementById('tipo').value;
-  const envioGratis = document.getElementById('envioGratis').value;
-  const peso = parseFloat(document.getElementById('peso').value);
-  const manual = document.getElementById('manual').value;
-
-  // Comisiones
-  let comisionClasica = 0.13;
-  let comisionPremium = 0.16;
-
-  // Costo de envío simple (puedes ajustar por rangos de peso)
-  let costoEnvio = 0;
-  if (envioGratis === "Si") {
-    if (peso <= 1) costoEnvio = 8000;
-    else if (peso <= 5) costoEnvio = 12000;
-    else costoEnvio = 20000;
-  }
-
-  // Precio sugerido
-  let precioVenta = manual === "Si" ? 
-      parseFloat(document.getElementById('precioManual').value) :
-      costoUnidad * 1.5;
-
-  // Calcular ganancias
-  const ventasDiv = document.getElementById('resultadoVentas');
-
-  const calcGanancia = (comision) => {
-    const comisionValor = precioVenta * comision;
-    const neto = precioVenta - comisionValor - costoEnvio - costoUnidad;
-    const porcentaje = (neto / costoUnidad) * 100;
-    return { neto, porcentaje, comisionValor };
-  };
-
-  const clasica = calcGanancia(comisionClasica);
-  const premium = calcGanancia(comisionPremium);
-
-  ventasDiv.innerHTML = `
-    Precio sugerido (50% margen): COP ${precioVenta.toFixed(2)}<br><br>
-    Clasica: Comisión 13.0%, Ganancia neta COP ${clasica.neto.toFixed(2)}, % ganancia ${clasica.porcentaje.toFixed(1)}%<br>
-    Premium: Comisión 16.0%, Ganancia neta COP ${premium.neto.toFixed(2)}, % ganancia ${premium.porcentaje.toFixed(1)}%
-  `;
-}
+// Calcular al cargar la página
+calcularTotal();
 </script>
+
 </body>
 </html>
